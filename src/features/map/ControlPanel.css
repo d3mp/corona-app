@@ -1,0 +1,16 @@
+.control-panel {
+  position: absolute;
+  left: 10px;
+  right: 10px;
+  bottom: 50px;
+  padding: 12px 24px;
+  background-color: #fff;
+  outline: none;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  cursor: auto;
+}
+
+.control-panel .range {
+  width: 100%;
+  cursor: pointer;
+}
