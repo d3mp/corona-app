@@ -10,12 +10,12 @@ import {
 } from "react-virtualized";
 import "react-virtualized/styles.css";
 import {
-  fetchDataByCounties,
+  fetchCountries,
+  fetchCountriesTimeline,
   selectSortBy,
   selectSortDirection,
   sort,
   selectSortedData,
-  fetchHistoricalData,
 } from "./homeSlice";
 
 import styles from "./Home.module.css";
@@ -27,8 +27,8 @@ export function Home() {
   const sortDirection: SortDirectionType = useSelector(selectSortDirection);
 
   useEffect(() => {
-    dispatch(fetchDataByCounties());
-    dispatch(fetchHistoricalData());
+    dispatch(fetchCountries());
+    dispatch(fetchCountriesTimeline());
   }, [dispatch]);
 
   return (

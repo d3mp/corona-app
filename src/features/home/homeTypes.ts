@@ -19,7 +19,7 @@ export interface Country {
   casesPerOneMillion: number;
   deathsPerOneMillion: number;
   updated: Date;
-  timeline: HistoricalTimeline;
+  timeline: Pick<CountryTimeline, "timeline">;
 }
 
 export interface TotalByCountry {
@@ -32,20 +32,18 @@ export interface TotalByCountry {
   recovered: number;
 }
 
-export interface HistoricalTimeline {
-  cases: {
-    [date: string]: number;
-  };
-  deaths: {
-    [date: string]: number;
-  };
-  recovered: {
-    [date: string]: number;
-  };
-}
-
-export interface HistoricalData {
+export interface CountryTimeline {
   country: string;
   province: string | null;
-  timeline: HistoricalTimeline;
+  timeline: {
+    cases: {
+      [date: string]: number;
+    };
+    deaths: {
+      [date: string]: number;
+    };
+    recovered: {
+      [date: string]: number;
+    };
+  };
 }

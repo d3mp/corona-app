@@ -3,11 +3,12 @@ import { useSelector, useDispatch } from "react-redux";
 import MapGL, { Source, Layer } from "react-map-gl";
 import moment from "moment";
 import {
-  fetchDataByCounties,
+  fetchCountries,
+  fetchCountriesTimeline,
   selectDataWithTimelineFeatureCollcetion,
-  fetchHistoricalData,
 } from "../home/homeSlice";
-import ControlPanel from "./ControlPanel";
+import TimelinePanel from "./TimelinePanel";
+import { getSteps } from "./mapUtils";
 
 import "mapbox-gl/dist/mapbox-gl.css";
 
@@ -26,8 +27,8 @@ export function Map() {
   );
 
   useEffect(() => {
-    dispatch(fetchDataByCounties());
-    dispatch(fetchHistoricalData());
+    dispatch(fetchCountries());
+    dispatch(fetchCountriesTimeline());
   }, [dispatch]);
 
   return (
@@ -85,27 +86,12 @@ export function Map() {
           />
         </Source>
       </MapGL>
-      <ControlPanel onChange={(date) => setDate(date.format("M/D/YY"))} />
+      <TimelinePanel
+        date={moment(date, "M/D/YY")}
+        onChange={(date) => setDate(date.format("M/D/YY"))}
+        minDate={moment("2020-01-22T00:00:00")}
+        maxDate={moment()}
+      />
     </div>
   );
-}
-
-function getSteps(max: number = 1000000) {
-  const steps = [0, 1, 5, 10, 50, 100, 500, 1000, 2000];
-
-  for (let step = 5000; step <= max; step += 5000) {
-    steps.push(step);
-
-    if (step >= 100000) {
-      step += 5000;
-    }
-
-    if (step >= 200000) {
-      step += 15000;
-    }
-  }
-
-  return steps.reduce((steps: number[], step: number, index) => {
-    return [...steps, step, index + 2 * 2];
-  }, []);
 }

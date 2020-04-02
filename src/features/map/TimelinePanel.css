@@ -1,4 +1,4 @@
-.control-panel {
+.timeline-panel {
   position: absolute;
   left: 10px;
   right: 10px;
@@ -10,7 +10,7 @@
   cursor: auto;
 }
 
-.control-panel .range {
+.timeline-panel .range {
   width: 100%;
   cursor: pointer;
 }

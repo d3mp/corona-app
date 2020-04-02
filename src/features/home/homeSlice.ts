@@ -7,40 +7,29 @@ import {
 } from "@reduxjs/toolkit";
 import _ from "lodash";
 import { RootState } from "../../app/store";
-import { HistoricalData, Country, TotalByCountry } from "./homeTypes";
+import { Country, CountryTimeline, TotalByCountry } from "./homeTypes";
 import { population } from "../../common/data/population";
 import moment from "moment";
+import { CoronaAPI } from "../../api/corona";
 
 // Async actions
 
-export const fetchDataByCounties = createAsyncThunk(
-  "home/fetchDataByCountries",
-  async () => {
-    const response = await fetch(
-      "https://corona.lmao.ninja/countries?sort=country"
-    );
-    const data = await response.json();
-
-    return data;
-  }
+export const fetchCountries = createAsyncThunk(
+  "home/fetchCountries",
+  async () => await CoronaAPI.getCountries()
 );
 
-export const fetchHistoricalData = createAsyncThunk(
-  "home/fetchHistoicalData",
-  async () => {
-    const response = await fetch("https://corona.lmao.ninja/v2/historical");
-    const data: HistoricalData[] = await response.json();
-
-    return data;
-  }
+export const fetchCountriesTimeline = createAsyncThunk(
+  "home/fetchCountriesTimeline",
+  async () => await CoronaAPI.getCountriesTimeline()
 );
 
 // Slice
 
 interface HomeState {
   loading: "idle" | "pending" | "succeeded" | "failed";
-  data: [];
-  historicalData: HistoricalData[];
+  countries: Country[];
+  countriesTimeline: CountryTimeline[];
   error: Error | null;
   sortDirection: SortDirectionType;
   sortBy: string;
@@ -48,8 +37,8 @@ interface HomeState {
 
 const initialState: HomeState = {
   loading: "idle",
-  data: [],
-  historicalData: [],
+  countries: [],
+  countriesTimeline: [],
   error: null,
   sortDirection: SortDirection.ASC,
   sortBy: "country",
@@ -71,50 +60,45 @@ export const homeSlice = createSlice({
     },
   },
   extraReducers: (builder) => {
-    builder.addCase(fetchDataByCounties.pending, (state) => {
+    builder.addCase(fetchCountries.pending, (state) => {
       if (state.loading === "idle") {
         state.loading = "pending";
       }
     });
 
-    builder.addCase(fetchDataByCounties.fulfilled, (state, action) => {
-      if (state.loading === "pending") {
-        state.loading = "idle";
+    builder.addCase(
+      fetchCountries.fulfilled,
+      (state, action: PayloadAction<Country[]>) => {
+        if (state.loading === "pending") {
+          state.loading = "idle";
+        }
+
+        state.countries = action.payload;
       }
+    );
 
-      state.data = action.payload;
+    builder.addCase(fetchCountries.rejected, (state, action) => {
+      // TODO: handle errors
+      // state.error = action.payload;
     });
 
-    builder.addCase(fetchDataByCounties.rejected, (state, action) => {
-      // if (action.payload) {
-      //     // Since we passed in `MyKnownError` to `rejectType` in `updateUser`, the type information will be available here.
-      //     state.error = action.payload.errorMessage
-      //   } else {
-      //     state.error = action.error
-      //   }
-    });
-
-    builder.addCase(fetchHistoricalData.pending, (state) => {
+    builder.addCase(fetchCountriesTimeline.pending, (state) => {
       if (state.loading === "idle") {
         state.loading = "pending";
       }
     });
 
-    builder.addCase(fetchHistoricalData.fulfilled, (state, action) => {
+    builder.addCase(fetchCountriesTimeline.fulfilled, (state, action) => {
       if (state.loading === "pending") {
         state.loading = "idle";
       }
 
-      state.historicalData = action.payload;
+      state.countriesTimeline = action.payload;
     });
 
-    builder.addCase(fetchHistoricalData.rejected, (state, action) => {
-      // if (action.payload) {
-      //     // Since we passed in `MyKnownError` to `rejectType` in `updateUser`, the type information will be available here.
-      //     state.error = action.payload.errorMessage
-      //   } else {
-      //     state.error = action.error
-      //   }
+    builder.addCase(fetchCountriesTimeline.rejected, (state, action) => {
+      // TODO: handle errors
+      // state.error = action.payload;
     });
   },
 });
@@ -123,15 +107,15 @@ export const { sort } = homeSlice.actions;
 
 // Selectors
 
-export const selectData = (state: RootState) => state.home.data;
-export const selectHistoricalData = (state: RootState) =>
-  state.home.historicalData;
+export const selectCountries = (state: RootState) => state.home.countries;
+export const selectCountriesTimeline = (state: RootState) =>
+  state.home.countriesTimeline;
 export const selectSortBy = (state: RootState) => state.home.sortBy;
 export const selectSortDirection = (state: RootState) =>
   state.home.sortDirection;
 
 export const selectlDataFeatureCollection = createSelector(
-  [selectData],
+  [selectCountries],
   (countries: Country[]) => {
     const featuerCollection: GeoJSON.FeatureCollection<
       GeoJSON.Point,
@@ -165,13 +149,13 @@ export const selectlDataFeatureCollection = createSelector(
 );
 
 export const selectDataWithTimelineFeatureCollcetion = createSelector(
-  [selectlDataFeatureCollection, selectHistoricalData],
+  [selectlDataFeatureCollection, selectCountriesTimeline],
   (
     featureCollcetion: GeoJSON.FeatureCollection<GeoJSON.Point, Country>,
-    historicalData: HistoricalData[]
+    countriesTimeline: CountryTimeline[]
   ) => {
     const currentDate = moment().format("M/D/YY");
-    const historicalByCountry = _.keyBy(historicalData, "country");
+    const historicalByCountry = _.keyBy(countriesTimeline, "country");
 
     const featureCollcetionWithTimeline: GeoJSON.FeatureCollection<
       GeoJSON.Point,
@@ -180,7 +164,7 @@ export const selectDataWithTimelineFeatureCollcetion = createSelector(
       ...featureCollcetion,
       features: featureCollcetion.features.map(
         (feature: GeoJSON.Feature<GeoJSON.Point, Country>) => {
-          const country: HistoricalData =
+          const country: CountryTimeline =
             historicalByCountry[feature.properties.country];
 
           return Object.assign({}, feature, {
@@ -211,7 +195,7 @@ export const selectDataWithTimelineFeatureCollcetion = createSelector(
 );
 
 export const selectSumData = createSelector(
-  [selectData],
+  [selectCountries],
   (countries: Country[]) => {
     const defaultValues: TotalByCountry = {
       active: 0,
@@ -238,7 +222,7 @@ export const selectSumData = createSelector(
 );
 
 export const selectDataWithPercentage = createSelector(
-  [selectData],
+  [selectCountries],
   (data: Country[]) =>
     data.map((country: Country) => {
       const casesWithoutDeaths = country.cases - country.deaths;
