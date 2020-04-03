@@ -10,7 +10,7 @@ import { RootState } from "../../app/store";
 import { Country, CountryTimeline, TotalByCountry } from "./homeTypes";
 import { population } from "../../common/data/population";
 import moment from "moment";
-import { CoronaAPI } from "../../api/corona";
+import * as CoronaAPI from "../../api/corona";
 
 // Async actions
 
