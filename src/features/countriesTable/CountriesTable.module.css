@@ -23,8 +23,14 @@
   color: #dedede;
   font-size: 12px;
   padding: 0 5px;
+  cursor: pointer;
 }
 
 .oddRow {
   background-color: #2b2a2a;
+}
+
+.evenRow:hover,
+.oddRow:hover {
+  background-color: #403f3f;
 }

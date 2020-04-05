@@ -1,13 +1,19 @@
-import React, { useState, useRef, memo } from "react";
+import React, { useState, useRef, memo, useEffect } from "react";
 import { useSelector } from "react-redux";
-import MapGL, { Source, Layer, InteractiveMap } from "react-map-gl";
+import MapGL, {
+  Source,
+  Layer,
+  InteractiveMap,
+  FlyToInterpolator,
+  InteractiveMapProps,
+} from "react-map-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import {
   getInOurPais,
   getTimelineExpression,
   COLORS_BY_FILTER_TYPE,
 } from "./mapUtils";
-import styles from "./Map.module.css";
+import { selectViewPort } from "./mapSlice";
 import {
   selectMomentTimelineDate,
   selectFilterType,
@@ -16,15 +22,14 @@ import {
 import { selectlCountriesByTimelineFC } from "../countries/countriesSlice";
 import { SHORT_DATE_FORMAT } from "../../common/constants/global";
 
+import styles from "./Map.module.css";
+
 function Map() {
   const mapRef = useRef<InteractiveMap>(null);
-  const [viewport, setViewport] = useState({
-    longitude: 0,
-    latitude: 15,
-    zoom: 1.5,
-    bearing: 0,
-    pitch: 0,
-  });
+  const initialViewport = useSelector(selectViewPort);
+  const [viewport, setViewport] = useState<Partial<InteractiveMapProps>>(
+    initialViewport
+  );
   const featureCollection = useSelector(selectlCountriesByTimelineFC);
   const filterType: FilterType = useSelector(selectFilterType);
   const date: string = useSelector(selectMomentTimelineDate).format(
@@ -32,6 +37,15 @@ function Map() {
   );
   const hasCasesExpression = getTimelineExpression("has", date, filterType);
   const getCasesExpression = getTimelineExpression("get", date, filterType);
+
+  useEffect(() => {
+    // fly to the new position
+    setViewport({
+      ...initialViewport,
+      transitionInterpolator: new FlyToInterpolator({ speed: 1.2 }),
+      transitionDuration: "auto",
+    });
+  }, [initialViewport]);
 
   return (
     <div className={styles.mapContainer}>

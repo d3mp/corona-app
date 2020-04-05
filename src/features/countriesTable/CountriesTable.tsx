@@ -10,6 +10,7 @@ import {
 import { headerRenderer } from "./CountriesTableHeader";
 import styles from "./CountriesTable.module.css";
 import { Country } from "../countries/countriesTypes";
+import { setViewport } from "../map/mapSlice";
 
 export function CountriesTable() {
   const dispatch = useDispatch();
@@ -34,6 +35,15 @@ export function CountriesTable() {
               rowCount={countries.length}
               rowClassName={rowClassName}
               rowGetter={({ index }) => countries[index]}
+              onRowClick={({ rowData }) =>
+                dispatch(
+                  setViewport({
+                    longitude: rowData.countryInfo.long,
+                    latitude: rowData.countryInfo.lat,
+                    zoom: 6,
+                  })
+                )
+              }
               sort={({ sortBy, sortDirection }) =>
                 dispatch(sort({ sortBy, sortDirection }))
               }

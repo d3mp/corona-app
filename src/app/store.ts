@@ -4,12 +4,14 @@ import {
   Action,
   getDefaultMiddleware,
 } from "@reduxjs/toolkit";
-import sideBar from "../features/sideBar/sideBarSlice";
 import countries from "../features/countries/countriesSlice";
+import map from "../features/map/mapSlice";
+import sideBar from "../features/sideBar/sideBarSlice";
 
 export const store = configureStore({
   reducer: {
     countries,
+    map,
     sideBar,
   },
   middleware: getDefaultMiddleware({ immutableCheck: false }),
