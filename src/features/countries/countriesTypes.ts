@@ -15,6 +15,7 @@ export interface Country {
   deaths: number;
   todayCases: number;
   todayDeaths: number;
+  todayRecovered: number;
   recovered: number;
   casesPerOneMillion: number;
   deathsPerOneMillion: number;
@@ -25,10 +26,7 @@ export interface Country {
 export interface TotalByCountry {
   active: number;
   cases: number;
-  critical: number;
   deaths: number;
-  todayCases: number;
-  todayDeaths: number;
   recovered: number;
 }
 
@@ -46,4 +44,12 @@ export interface CountryTimeline {
       [date: string]: number;
     };
   };
+}
+
+export interface CountriesByName {
+  [countryName: string]: Country;
+}
+
+export interface CountriesTimelineByName {
+  [countryName: string]: CountryTimeline;
 }

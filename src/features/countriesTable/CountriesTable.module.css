@@ -1,0 +1,30 @@
+.tableContainer {
+  height: 100%;
+}
+
+.headerCol {
+  display: flex;
+  align-items: center;
+}
+
+.headerRow {
+  display: flex;
+  text-transform: capitalize;
+  font-size: 12px;
+  border-bottom: 2px solid #2b2a2a;
+}
+
+.headerRow,
+.evenRow,
+.oddRow {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  color: #dedede;
+  font-size: 12px;
+  padding: 0 5px;
+}
+
+.oddRow {
+  background-color: #2b2a2a;
+}

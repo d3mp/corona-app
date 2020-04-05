@@ -1,5 +1,10 @@
+*:focus {
+  outline: none;
+}
 .App {
-  text-align: center;
+  display: flex;
+  flex-direction: row;
+  /* text-align: center; */
 }
 
 .App-logo {

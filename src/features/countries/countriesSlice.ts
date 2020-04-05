@@ -7,58 +7,55 @@ import {
 } from "@reduxjs/toolkit";
 import _ from "lodash";
 import { RootState } from "../../app/store";
-import { Country, CountryTimeline, TotalByCountry } from "./homeTypes";
+import {
+  Country,
+  CountryTimeline,
+  TotalByCountry,
+  CountriesByName,
+  CountriesTimelineByName,
+} from "./countriesTypes";
 import { population } from "../../common/data/population";
-import moment from "moment";
+import moment, { Moment } from "moment";
 import * as CoronaAPI from "../../api/corona";
+import { SHORT_DATE_FORMAT } from "../../common/constants/global";
+import {
+  selectSortBy,
+  selectSortDirection,
+  selectMomentTimelineDate,
+} from "../sideBar/sideBarSlice";
 
 // Async actions
 
 export const fetchCountries = createAsyncThunk(
-  "home/fetchCountries",
+  "countries/fetchCountries",
   async () => await CoronaAPI.getCountries()
 );
 
 export const fetchCountriesTimeline = createAsyncThunk(
-  "home/fetchCountriesTimeline",
+  "countries/fetchCountriesTimeline",
   async () => await CoronaAPI.getCountriesTimeline()
 );
 
 // Slice
 
-interface HomeState {
+interface CountriesState {
   loading: "idle" | "pending" | "succeeded" | "failed";
-  countries: Country[];
-  countriesTimeline: CountryTimeline[];
+  countriesByName: CountriesByName;
+  countriesTimelineByName: CountriesTimelineByName;
   error: Error | null;
-  sortDirection: SortDirectionType;
-  sortBy: string;
 }
 
-const initialState: HomeState = {
+const initialState: CountriesState = {
   loading: "idle",
-  countries: [],
-  countriesTimeline: [],
+  countriesByName: {},
+  countriesTimelineByName: {},
   error: null,
-  sortDirection: SortDirection.ASC,
-  sortBy: "country",
 };
 
-export const homeSlice = createSlice({
-  name: "home",
+export const countriesSlice = createSlice({
+  name: "countries",
   initialState,
-  reducers: {
-    sort: (
-      state,
-      action: PayloadAction<{
-        sortBy: string;
-        sortDirection: SortDirectionType;
-      }>
-    ) => {
-      state.sortBy = action.payload.sortBy;
-      state.sortDirection = action.payload.sortDirection;
-    },
-  },
+  reducers: {},
   extraReducers: (builder) => {
     builder.addCase(fetchCountries.pending, (state) => {
       if (state.loading === "idle") {
@@ -73,7 +70,10 @@ export const homeSlice = createSlice({
           state.loading = "idle";
         }
 
-        state.countries = action.payload;
+        state.countriesByName = action.payload.reduce(
+          (prev, curr) => ({ ...prev, [curr.country]: curr }),
+          {}
+        );
       }
     );
 
@@ -93,7 +93,10 @@ export const homeSlice = createSlice({
         state.loading = "idle";
       }
 
-      state.countriesTimeline = action.payload;
+      state.countriesTimelineByName = action.payload.reduce(
+        (prev, curr) => ({ ...prev, [curr.country]: curr }),
+        {}
+      );
     });
 
     builder.addCase(fetchCountriesTimeline.rejected, (state, action) => {
@@ -103,16 +106,17 @@ export const homeSlice = createSlice({
   },
 });
 
-export const { sort } = homeSlice.actions;
-
 // Selectors
 
-export const selectCountries = (state: RootState) => state.home.countries;
-export const selectCountriesTimeline = (state: RootState) =>
-  state.home.countriesTimeline;
-export const selectSortBy = (state: RootState) => state.home.sortBy;
-export const selectSortDirection = (state: RootState) =>
-  state.home.sortDirection;
+export const selectCountriesByName = (state: RootState) =>
+  state.countries.countriesByName;
+export const selectCountriesTimelineByName = (state: RootState) =>
+  state.countries.countriesTimelineByName;
+
+export const selectCountries = createSelector(
+  [selectCountriesByName],
+  (countriesByName: CountriesByName) => Object.values(countriesByName)
+);
 
 export const selectlDataFeatureCollection = createSelector(
   [selectCountries],
@@ -149,13 +153,13 @@ export const selectlDataFeatureCollection = createSelector(
 );
 
 export const selectDataWithTimelineFeatureCollcetion = createSelector(
-  [selectlDataFeatureCollection, selectCountriesTimeline],
+  [selectlDataFeatureCollection, selectCountriesTimelineByName],
   (
     featureCollcetion: GeoJSON.FeatureCollection<GeoJSON.Point, Country>,
-    countriesTimeline: CountryTimeline[]
+    countriesTimelineByName: CountriesTimelineByName
   ) => {
-    const currentDate = moment().format("M/D/YY");
-    const historicalByCountry = _.keyBy(countriesTimeline, "country");
+    const currentDate = moment().format(SHORT_DATE_FORMAT);
+    const historicalByCountry = countriesTimelineByName;
 
     const featureCollcetionWithTimeline: GeoJSON.FeatureCollection<
       GeoJSON.Point,
@@ -194,60 +198,86 @@ export const selectDataWithTimelineFeatureCollcetion = createSelector(
   }
 );
 
-export const selectSumData = createSelector(
-  [selectCountries],
-  (countries: Country[]) => {
-    const defaultValues: TotalByCountry = {
-      active: 0,
-      cases: 0,
-      critical: 0,
-      deaths: 0,
-      recovered: 0,
-      todayCases: 0,
-      todayDeaths: 0,
-    };
-
-    return countries.reduce((prev: TotalByCountry, country: Country) => {
-      return {
-        active: prev.active + country.active,
-        cases: prev.cases + country.cases,
-        critical: prev.critical + country.critical,
-        deaths: prev.deaths + country.deaths,
-        recovered: prev.recovered + country.recovered,
-        todayCases: prev.todayCases + country.todayCases,
-        todayDeaths: prev.todayDeaths + country.todayDeaths,
-      };
-    }, defaultValues);
+export const selectCountriesByTimeline = createSelector(
+  [selectCountries, selectMomentTimelineDate],
+  (countries: Country[], timelinDate: Moment) => {
+    return;
   }
 );
 
-export const selectDataWithPercentage = createSelector(
-  [selectCountries],
-  (data: Country[]) =>
-    data.map((country: Country) => {
-      const casesWithoutDeaths = country.cases - country.deaths;
+export const selectCountriesByTimelineDate = createSelector(
+  [selectCountries, selectCountriesTimelineByName, selectMomentTimelineDate],
+  (
+    countries: Country[],
+    countriesTimelineByName: CountriesTimelineByName,
+    timelinDate: Moment
+  ) => {
+    const date: string = timelinDate.format(SHORT_DATE_FORMAT);
+    const today: Moment = moment();
 
-      return {
-        ...country,
-        casesWithoutDeaths,
-        recoveredPercentage: casesWithoutDeaths
-          ? country.recovered
-            ? +((country.recovered / casesWithoutDeaths) * 100).toFixed(2)
-            : 0
-          : 100,
-      };
-    })
+    return countries.reduce((countries: Country[], country: Country) => {
+      const countryTimeline =
+        countriesTimelineByName[country.country]?.timeline || undefined;
+
+      if (timelinDate.isSame(today, "day")) {
+        countries.push({
+          ...country,
+          todayCases: country.cases,
+          todayDeaths: country.deaths,
+          todayRecovered: country.recovered,
+        });
+      } else if (countryTimeline) {
+        if (
+          (countryTimeline.cases && countryTimeline.cases[date]) ||
+          (countryTimeline.deaths && countryTimeline.deaths[date]) ||
+          (countryTimeline.recovered && countryTimeline.recovered[date])
+        ) {
+          countries.push({
+            ...country,
+            todayCases: countryTimeline.cases[date] || 0,
+            todayDeaths: countryTimeline.deaths[date] || 0,
+            todayRecovered: countryTimeline.recovered[date] || 0,
+          });
+        }
+      }
+
+      return countries;
+    }, []);
+  }
 );
 
-export const selectSortedData = createSelector(
-  [selectDataWithPercentage, selectSortBy, selectSortDirection],
-  (data: any[], sortBy: string, sortDirection: SortDirectionType) => {
+export const selectSortedCountriesByTimelineDate = createSelector(
+  [selectCountriesByTimelineDate, selectSortBy, selectSortDirection],
+  (countries: Country[], sortBy: string, sortDirection: SortDirectionType) => {
     return _.orderBy(
-      data,
+      countries,
       sortBy,
       sortDirection === SortDirection.ASC ? "asc" : "desc"
     ).map((country, index) => ({ ...country, index: index + 1 }));
   }
 );
 
-export default homeSlice.reducer;
+export const selectSumDataByTimelineDate = createSelector(
+  [selectCountriesByTimelineDate],
+  (countries: Country[]) => {
+    const defaultValues: TotalByCountry = {
+      active: 0,
+      cases: 0,
+      deaths: 0,
+      recovered: 0,
+    };
+
+    return countries.reduce((prev: TotalByCountry, country: Country) => {
+      return {
+        active:
+          prev.active +
+          (country.todayCases - country.todayDeaths - country.todayRecovered),
+        cases: prev.cases + country.todayCases,
+        deaths: prev.deaths + country.todayDeaths,
+        recovered: prev.recovered + country.todayRecovered,
+      };
+    }, defaultValues);
+  }
+);
+
+export default countriesSlice.reducer;

@@ -1,12 +1,18 @@
-import { configureStore, ThunkAction, Action } from "@reduxjs/toolkit";
-import counterReducer from "../features/counter/counterSlice";
-import homeReducer from "../features/home/homeSlice";
+import {
+  configureStore,
+  ThunkAction,
+  Action,
+  getDefaultMiddleware,
+} from "@reduxjs/toolkit";
+import sideBar from "../features/sideBar/sideBarSlice";
+import countries from "../features/countries/countriesSlice";
 
 export const store = configureStore({
   reducer: {
-    home: homeReducer,
-    counter: counterReducer,
+    countries,
+    sideBar,
   },
+  middleware: getDefaultMiddleware({ immutableCheck: false }),
 });
 
 export type RootState = ReturnType<typeof store.getState>;

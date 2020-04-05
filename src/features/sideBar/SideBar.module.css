@@ -1,0 +1,34 @@
+.sideBar {
+  width: 500px;
+  display: flex;
+  flex-direction: column;
+  background-color: #343332;
+  border-right: 2px solid #2b2a2a;
+}
+
+.header {
+  display: flex;
+  padding: 10px;
+  border-bottom: 2px solid #2b2a2a;
+}
+
+.headerStat {
+  flex: 1;
+  color: #dedede;
+  text-align: center;
+}
+
+.headerStatLabel {
+  font-size: 12px;
+}
+
+.headerStatTotalQuantity {
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+}
