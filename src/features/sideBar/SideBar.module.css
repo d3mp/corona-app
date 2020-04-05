@@ -16,6 +16,12 @@
   flex: 1;
   color: #dedede;
   text-align: center;
+  padding: 5px;
+  cursor: pointer;
+}
+
+.headerStat:hover {
+  opacity: 0.8;
 }
 
 .headerStatLabel {

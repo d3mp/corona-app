@@ -2,10 +2,18 @@ import React, { useState, useRef, memo } from "react";
 import { useSelector } from "react-redux";
 import MapGL, { Source, Layer, InteractiveMap } from "react-map-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
-import { getInOurPais, getTimelineExpression } from "./mapUtils";
+import {
+  getInOurPais,
+  getTimelineExpression,
+  COLORS_BY_FILTER_TYPE,
+} from "./mapUtils";
 import styles from "./Map.module.css";
-import { selectMomentTimelineDate } from "../sideBar/sideBarSlice";
-import { selectDataWithTimelineFeatureCollcetion } from "../countries/countriesSlice";
+import {
+  selectMomentTimelineDate,
+  selectFilterType,
+  FilterType,
+} from "../sideBar/sideBarSlice";
+import { selectlCountriesByTimelineFC } from "../countries/countriesSlice";
 import { SHORT_DATE_FORMAT } from "../../common/constants/global";
 
 function Map() {
@@ -17,14 +25,13 @@ function Map() {
     bearing: 0,
     pitch: 0,
   });
-  const featureCollection = useSelector(
-    selectDataWithTimelineFeatureCollcetion
-  );
+  const featureCollection = useSelector(selectlCountriesByTimelineFC);
+  const filterType: FilterType = useSelector(selectFilterType);
   const date: string = useSelector(selectMomentTimelineDate).format(
     SHORT_DATE_FORMAT
   );
-  const hasCasesExpression = getTimelineExpression("has", date, "cases");
-  const getCasesExpression = getTimelineExpression("get", date, "cases");
+  const hasCasesExpression = getTimelineExpression("has", date, filterType);
+  const getCasesExpression = getTimelineExpression("get", date, filterType);
 
   return (
     <div className={styles.mapContainer}>
@@ -49,10 +56,10 @@ function Map() {
                 getCasesExpression,
                 ...getInOurPais(),
               ],
-              "circle-color": "#FF5733",
+              "circle-color": COLORS_BY_FILTER_TYPE[filterType],
               "circle-opacity": 0.4,
               "circle-stroke-width": 1,
-              "circle-stroke-color": "#FF5733",
+              "circle-stroke-color": COLORS_BY_FILTER_TYPE[filterType],
             }}
           />
           <Layer

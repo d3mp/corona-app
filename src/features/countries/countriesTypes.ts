@@ -15,7 +15,6 @@ export interface Country {
   deaths: number;
   todayCases: number;
   todayDeaths: number;
-  todayRecovered: number;
   recovered: number;
   casesPerOneMillion: number;
   deathsPerOneMillion: number;

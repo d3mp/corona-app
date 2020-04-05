@@ -118,93 +118,6 @@ export const selectCountries = createSelector(
   (countriesByName: CountriesByName) => Object.values(countriesByName)
 );
 
-export const selectlDataFeatureCollection = createSelector(
-  [selectCountries],
-  (countries: Country[]) => {
-    const featuerCollection: GeoJSON.FeatureCollection<
-      GeoJSON.Point,
-      Country
-    > = {
-      type: "FeatureCollection",
-      features: countries
-        .filter((country) => country.countryInfo._id)
-        .map((country) => {
-          const feature: GeoJSON.Feature<GeoJSON.Point, Country> = {
-            type: "Feature",
-            geometry: {
-              type: "Point",
-              coordinates: [country.countryInfo.long, country.countryInfo.lat],
-            },
-            properties: {
-              ...country,
-              countryInfo: {
-                ...country.countryInfo,
-                population: population[country.country],
-              },
-            },
-          };
-
-          return feature;
-        }),
-    };
-
-    return featuerCollection;
-  }
-);
-
-export const selectDataWithTimelineFeatureCollcetion = createSelector(
-  [selectlDataFeatureCollection, selectCountriesTimelineByName],
-  (
-    featureCollcetion: GeoJSON.FeatureCollection<GeoJSON.Point, Country>,
-    countriesTimelineByName: CountriesTimelineByName
-  ) => {
-    const currentDate = moment().format(SHORT_DATE_FORMAT);
-    const historicalByCountry = countriesTimelineByName;
-
-    const featureCollcetionWithTimeline: GeoJSON.FeatureCollection<
-      GeoJSON.Point,
-      Country
-    > = {
-      ...featureCollcetion,
-      features: featureCollcetion.features.map(
-        (feature: GeoJSON.Feature<GeoJSON.Point, Country>) => {
-          const country: CountryTimeline =
-            historicalByCountry[feature.properties.country];
-
-          return Object.assign({}, feature, {
-            properties: Object.assign({}, feature.properties, {
-              timeline: {
-                cases: Object.assign({}, country && country.timeline.cases, {
-                  [currentDate]: feature.properties.cases,
-                }),
-                deaths: Object.assign({}, country && country.timeline.deaths, {
-                  [currentDate]: feature.properties.deaths,
-                }),
-                recovered: Object.assign(
-                  {},
-                  country && country.timeline.recovered,
-                  {
-                    [currentDate]: feature.properties.recovered,
-                  }
-                ),
-              },
-            }),
-          });
-        }
-      ),
-    };
-
-    return featureCollcetionWithTimeline;
-  }
-);
-
-export const selectCountriesByTimeline = createSelector(
-  [selectCountries, selectMomentTimelineDate],
-  (countries: Country[], timelinDate: Moment) => {
-    return;
-  }
-);
-
 export const selectCountriesByTimelineDate = createSelector(
   [selectCountries, selectCountriesTimelineByName, selectMomentTimelineDate],
   (
@@ -220,23 +133,20 @@ export const selectCountriesByTimelineDate = createSelector(
         countriesTimelineByName[country.country]?.timeline || undefined;
 
       if (timelinDate.isSame(today, "day")) {
-        countries.push({
-          ...country,
-          todayCases: country.cases,
-          todayDeaths: country.deaths,
-          todayRecovered: country.recovered,
-        });
+        countries.push(country);
       } else if (countryTimeline) {
-        if (
-          (countryTimeline.cases && countryTimeline.cases[date]) ||
-          (countryTimeline.deaths && countryTimeline.deaths[date]) ||
-          (countryTimeline.recovered && countryTimeline.recovered[date])
-        ) {
+        const cases = countryTimeline.cases[date] || 0;
+        const deaths = countryTimeline.deaths[date] || 0;
+        const recovered = countryTimeline.recovered[date] || 0;
+        const active = cases - deaths - recovered;
+
+        if (cases || deaths || recovered || active) {
           countries.push({
             ...country,
-            todayCases: countryTimeline.cases[date] || 0,
-            todayDeaths: countryTimeline.deaths[date] || 0,
-            todayRecovered: countryTimeline.recovered[date] || 0,
+            cases,
+            deaths,
+            recovered,
+            active,
           });
         }
       }
@@ -269,14 +179,47 @@ export const selectSumDataByTimelineDate = createSelector(
 
     return countries.reduce((prev: TotalByCountry, country: Country) => {
       return {
-        active:
-          prev.active +
-          (country.todayCases - country.todayDeaths - country.todayRecovered),
-        cases: prev.cases + country.todayCases,
-        deaths: prev.deaths + country.todayDeaths,
-        recovered: prev.recovered + country.todayRecovered,
+        active: prev.active + country.active,
+        cases: prev.cases + country.cases,
+        deaths: prev.deaths + country.deaths,
+        recovered: prev.recovered + country.recovered,
       };
     }, defaultValues);
+  }
+);
+
+export const selectlCountriesByTimelineFC = createSelector(
+  [selectCountriesByTimelineDate],
+  (countries: Country[]) => {
+    const featuerCollection: GeoJSON.FeatureCollection<
+      GeoJSON.Point,
+      Country
+    > = {
+      type: "FeatureCollection",
+      features: countries
+        .filter((country) => country.countryInfo._id)
+        .map((country) => {
+          const feature: GeoJSON.Feature<GeoJSON.Point, Country> = {
+            type: "Feature",
+            geometry: {
+              type: "Point",
+              coordinates: [country.countryInfo.long, country.countryInfo.lat],
+            },
+            properties: country,
+            // properties: {
+            //   ...country,
+            //   countryInfo: {
+            //     ...country.countryInfo,
+            //     population: population[country.country],
+            //   },
+            // },
+          };
+
+          return feature;
+        }),
+    };
+
+    return featuerCollection;
   }
 );
 

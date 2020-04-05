@@ -55,7 +55,7 @@ export function CountriesTable() {
               />
               <Column
                 label="Confirmed"
-                dataKey="todayCases"
+                dataKey="cases"
                 width={colWidth}
                 headerRenderer={headerRenderer}
                 cellDataGetter={({ dataKey, rowData }) =>
@@ -64,7 +64,7 @@ export function CountriesTable() {
               />
               <Column
                 label="Recovered"
-                dataKey="todayRecovered"
+                dataKey="recovered"
                 width={colWidth}
                 headerRenderer={headerRenderer}
                 cellDataGetter={({ dataKey, rowData }) =>
@@ -73,7 +73,7 @@ export function CountriesTable() {
               />
               <Column
                 label="Deaths"
-                dataKey="todayDeaths"
+                dataKey="deaths"
                 width={colWidth}
                 headerRenderer={headerRenderer}
                 cellDataGetter={({ dataKey, rowData }) =>
@@ -85,12 +85,8 @@ export function CountriesTable() {
                 dataKey="active"
                 width={colWidth}
                 headerRenderer={headerRenderer}
-                cellDataGetter={({ rowData }) =>
-                  (
-                    rowData.todayCases -
-                    rowData.todayDeaths -
-                    rowData.todayRecovered
-                  ).toLocaleString()
+                cellDataGetter={({ dataKey, rowData }) =>
+                  rowData[dataKey].toLocaleString()
                 }
               />
             </Table>

@@ -1,3 +1,12 @@
+import { FilterType } from "../sideBar/sideBarSlice";
+
+export const COLORS_BY_FILTER_TYPE = {
+  cases: "#FF5733",
+  recovered: "#75FF33",
+  deaths: "#BD33FF",
+  active: "#FFBD33",
+};
+
 /**
  * Creates an array with input/output paris for interpolate expression
  * @param max
@@ -27,12 +36,13 @@ export function getInOurPais(max: number = 1000000) {
  * Creates specific expression for getting timeline information from  feature property
  * @param operator
  * @param date
- * @param timelineType
+ * @param filterType
  */
 export function getTimelineExpression(
   operator: mapboxgl.ExpressionName = "get",
   date: string,
-  timelineType: "cases" | "deaths" | "recovered"
+  field: FilterType
 ): mapboxgl.Expression {
-  return [operator, date, ["get", timelineType, ["get", "timeline"]]];
+  // return [operator, date, ["get", field, ["get", "timeline"]]];
+  return [operator, field];
 }
