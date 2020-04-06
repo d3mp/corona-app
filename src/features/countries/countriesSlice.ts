@@ -1,21 +1,20 @@
+import moment, { Moment } from "moment";
+import _ from "lodash";
 import { SortDirection, SortDirectionType } from "react-virtualized";
 import {
   createSlice,
   createAsyncThunk,
   createSelector,
   PayloadAction,
+  SerializedError,
 } from "@reduxjs/toolkit";
-import _ from "lodash";
 import { RootState } from "../../app/store";
 import {
   Country,
-  CountryTimeline,
   TotalByCountry,
   CountriesByName,
   CountriesTimelineByName,
 } from "./countriesTypes";
-import { population } from "../../common/data/population";
-import moment, { Moment } from "moment";
 import * as CoronaAPI from "../../api/corona";
 import { SHORT_DATE_FORMAT } from "../../common/constants/global";
 import {
@@ -42,7 +41,7 @@ interface CountriesState {
   loading: "idle" | "pending" | "succeeded" | "failed";
   countriesByName: CountriesByName;
   countriesTimelineByName: CountriesTimelineByName;
-  error: Error | null;
+  error: SerializedError | null;
 }
 
 const initialState: CountriesState = {
@@ -57,52 +56,48 @@ export const countriesSlice = createSlice({
   initialState,
   reducers: {},
   extraReducers: (builder) => {
-    builder.addCase(fetchCountries.pending, (state) => {
-      if (state.loading === "idle") {
-        state.loading = "pending";
-      }
-    });
+    builder
+      .addCase(fetchCountries.pending, (state) => {
+        if (state.loading === "idle") {
+          state.loading = "pending";
+        }
+      })
+      .addCase(
+        fetchCountries.fulfilled,
+        (state, action: PayloadAction<Country[]>) => {
+          if (state.loading === "pending") {
+            state.loading = "idle";
+          }
 
-    builder.addCase(
-      fetchCountries.fulfilled,
-      (state, action: PayloadAction<Country[]>) => {
+          state.countriesByName = action.payload.reduce(
+            (prev, curr) => ({ ...prev, [curr.country]: curr }),
+            {}
+          );
+        }
+      )
+      .addCase(fetchCountries.rejected, (state, action) => {
+        state.error = action.error;
+      });
+
+    builder
+      .addCase(fetchCountriesTimeline.pending, (state) => {
+        if (state.loading === "idle") {
+          state.loading = "pending";
+        }
+      })
+      .addCase(fetchCountriesTimeline.fulfilled, (state, action) => {
         if (state.loading === "pending") {
           state.loading = "idle";
         }
 
-        state.countriesByName = action.payload.reduce(
+        state.countriesTimelineByName = action.payload.reduce(
           (prev, curr) => ({ ...prev, [curr.country]: curr }),
           {}
         );
-      }
-    );
-
-    builder.addCase(fetchCountries.rejected, (state, action) => {
-      // TODO: handle errors
-      // state.error = action.payload;
-    });
-
-    builder.addCase(fetchCountriesTimeline.pending, (state) => {
-      if (state.loading === "idle") {
-        state.loading = "pending";
-      }
-    });
-
-    builder.addCase(fetchCountriesTimeline.fulfilled, (state, action) => {
-      if (state.loading === "pending") {
-        state.loading = "idle";
-      }
-
-      state.countriesTimelineByName = action.payload.reduce(
-        (prev, curr) => ({ ...prev, [curr.country]: curr }),
-        {}
-      );
-    });
-
-    builder.addCase(fetchCountriesTimeline.rejected, (state, action) => {
-      // TODO: handle errors
-      // state.error = action.payload;
-    });
+      })
+      .addCase(fetchCountriesTimeline.rejected, (state, action) => {
+        state.error = action.error;
+      });
   },
 });
 
