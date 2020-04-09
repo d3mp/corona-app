@@ -117,7 +117,7 @@ export const selectSortedCountriesByTimelineDate = createSelector(
       countries,
       (country: Country) => {
         if (isSortByStatus) {
-          return country.timeline[sortBy as Status][date];
+          return country.timeline[sortBy as Status][date] || 0;
         }
 
         return country[sortBy as keyof Country];
@@ -140,10 +140,10 @@ export const selectSumDataByTimelineDate = createSelector(
 
     return countries.reduce((total: TotalByCountry, country: Country) => {
       return {
-        active: total.active + country.timeline.active[date],
-        confirmed: total.confirmed + country.timeline.confirmed[date],
-        deaths: total.deaths + country.timeline.deaths[date],
-        recovered: total.recovered + country.timeline.recovered[date],
+        active: total.active + (country.timeline.active[date] || 0),
+        confirmed: total.confirmed + (country.timeline.confirmed[date] || 0),
+        deaths: total.deaths + (country.timeline.deaths[date] || 0),
+        recovered: total.recovered + (country.timeline.recovered[date] || 0),
       };
     }, defaultValues);
   }

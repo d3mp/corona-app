@@ -9,6 +9,13 @@ import {
 import moment from "moment";
 import { SHORT_DATE_FORMAT } from "../common/constants/global";
 
+const defaultTimeline: Timeline = {
+  [Status.Active]: {},
+  [Status.Comfirmed]: {},
+  [Status.Deaths]: {},
+  [Status.Recovered]: {},
+};
+
 export async function getCountries(): Promise<CountriesByName> {
   const urls: string[] = [
     "https://corona.lmao.ninja/countries",
@@ -35,12 +42,7 @@ export async function getCountries(): Promise<CountriesByName> {
         historicalCountriesWithProvincesByName[country.country];
       const timeline: Timeline = historicalCountry
         ? historicalCountry.timeline
-        : {
-            [Status.Active]: {},
-            [Status.Comfirmed]: {},
-            [Status.Deaths]: {},
-            [Status.Recovered]: {},
-          };
+        : defaultTimeline;
 
       if (!Object.keys(timeline[Status.Comfirmed]).length) {
         console.warn("countries without timeline", country);
@@ -50,7 +52,7 @@ export async function getCountries(): Promise<CountriesByName> {
         ...countries,
         [country.country]: {
           ...country,
-          timeline: {
+          timeline: removeEmptyDays({
             [Status.Active]: {
               ...timeline[Status.Active],
               ...country.timeline[Status.Active],
@@ -67,7 +69,7 @@ export async function getCountries(): Promise<CountriesByName> {
               ...timeline[Status.Recovered],
               ...country.timeline[Status.Recovered],
             },
-          },
+          }),
         },
       };
     },
@@ -166,12 +168,7 @@ function getHistoricalCountriesWithProvincesByGlobalName(
           ...maybeProvince,
           province: null,
           timeline: maybeProvince.province
-            ? {
-                [Status.Active]: {},
-                [Status.Comfirmed]: {},
-                [Status.Deaths]: {},
-                [Status.Recovered]: {},
-              }
+            ? defaultTimeline
             : maybeProvince.timeline,
         };
       }
@@ -195,17 +192,35 @@ function getHistoricalCountriesWithProvincesByGlobalName(
 }
 
 /**
+ * Returns Timeline without empty days to optimize store size
+ * @param timeline
+ */
+function removeEmptyDays(timeline: Timeline): Timeline {
+  const statuses = Object.keys(timeline) as Status[];
+
+  return statuses.reduce((statuses: Timeline, status: Status) => {
+    return {
+      ...statuses,
+      [status]: Object.keys(timeline[status]).reduce(
+        (dates: TimelineDates, date: string) => {
+          if (timeline[status][date]) {
+            dates[date] = timeline[status][date];
+          }
+
+          return dates;
+        },
+        {}
+      ),
+    };
+  }, defaultTimeline);
+}
+
+/**
  * Returns summarized timelines
  * @param timeline1
  * @param timeline2
  */
 function sumTimelines(timeline1: Timeline, timeline2: Timeline) {
-  const defaultTimeline: Timeline = {
-    [Status.Active]: {},
-    [Status.Comfirmed]: {},
-    [Status.Deaths]: {},
-    [Status.Recovered]: {},
-  };
   const statuses = Object.keys(timeline1) as Status[];
 
   return statuses.reduce((timeline: Timeline, status: Status) => {

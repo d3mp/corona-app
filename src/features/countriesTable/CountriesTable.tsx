@@ -76,7 +76,7 @@ export function CountriesTable() {
                 width={colWidth}
                 headerRenderer={headerRenderer}
                 cellDataGetter={({ dataKey, rowData }) =>
-                  rowData.timeline[dataKey][date].toLocaleString()
+                  rowData.timeline[dataKey][date]?.toLocaleString() || 0
                 }
               />
               <Column
@@ -86,7 +86,7 @@ export function CountriesTable() {
                 width={colWidth}
                 headerRenderer={headerRenderer}
                 cellDataGetter={({ dataKey, rowData }) =>
-                  rowData.timeline[dataKey][date].toLocaleString()
+                  rowData.timeline[dataKey][date]?.toLocaleString() || 0
                 }
               />
               <Column
@@ -96,7 +96,7 @@ export function CountriesTable() {
                 width={colWidth}
                 headerRenderer={headerRenderer}
                 cellDataGetter={({ dataKey, rowData }) =>
-                  rowData.timeline[dataKey][date].toLocaleString()
+                  rowData.timeline[dataKey][date]?.toLocaleString() || 0
                 }
               />
               <Column
@@ -106,7 +106,7 @@ export function CountriesTable() {
                 width={colWidth}
                 headerRenderer={headerRenderer}
                 cellDataGetter={({ dataKey, rowData }) =>
-                  rowData.timeline[dataKey][date].toLocaleString()
+                  rowData.timeline[dataKey][date]?.toLocaleString() || 0
                 }
               />
             </Table>
