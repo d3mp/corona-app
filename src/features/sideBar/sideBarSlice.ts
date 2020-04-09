@@ -2,19 +2,18 @@ import moment from "moment";
 import { createSlice, PayloadAction, createSelector } from "@reduxjs/toolkit";
 import { RootState } from "../../app/store";
 import { SortDirectionType, SortDirection } from "react-virtualized";
-
-export type FilterType = "cases" | "deaths" | "recovered" | "active";
+import { Status } from "../countries/countriesTypes";
 
 interface SideBarState {
-  filterType: FilterType;
+  filterBy: Status;
   sortBy: string;
   sortDirection: SortDirectionType;
-  timelineDate: string; // default moment format
+  timelineDate: string; // ISO format
 }
 
 const initialState: SideBarState = {
-  filterType: "cases",
-  sortBy: "todayCases",
+  filterBy: Status.Comfirmed,
+  sortBy: Status.Comfirmed,
   sortDirection: SortDirection.DESC,
   timelineDate: moment().format(),
 };
@@ -23,8 +22,8 @@ export const sideBarSlice = createSlice({
   name: "sideBar",
   initialState,
   reducers: {
-    setFilterType: (state, action: PayloadAction<FilterType>) => {
-      state.filterType = action.payload;
+    setFilterType: (state, action: PayloadAction<Status>) => {
+      state.filterBy = action.payload;
     },
     setTimelineDate: (state, action: PayloadAction<string>) => {
       state.timelineDate = action.payload;
@@ -49,7 +48,7 @@ export const selectSortDirection = (state: RootState) =>
   state.sideBar.sortDirection;
 export const selectTimelineDate = (state: RootState) =>
   state.sideBar.timelineDate;
-export const selectFilterType = (state: RootState) => state.sideBar.filterType;
+export const selectFilterBy = (state: RootState) => state.sideBar.filterBy;
 
 export const selectMomentTimelineDate = createSelector(
   [selectTimelineDate],

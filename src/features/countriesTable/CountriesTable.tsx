@@ -6,15 +6,20 @@ import {
   selectSortBy,
   selectSortDirection,
   sort,
+  selectMomentTimelineDate,
 } from "../sideBar/sideBarSlice";
 import { headerRenderer } from "./CountriesTableHeader";
 import styles from "./CountriesTable.module.css";
-import { Country } from "../countries/countriesTypes";
+import { Country, Status } from "../countries/countriesTypes";
 import { setViewport } from "../map/mapSlice";
+import { SHORT_DATE_FORMAT } from "../../common/constants/global";
 
 export function CountriesTable() {
   const dispatch = useDispatch();
   const countries: Country[] = useSelector(selectSortedCountriesByTimelineDate);
+  const date: string = useSelector(selectMomentTimelineDate).format(
+    SHORT_DATE_FORMAT
+  );
   const sortBy: string = useSelector(selectSortBy);
   const sortDirection: SortDirectionType = useSelector(selectSortDirection);
 
@@ -35,11 +40,11 @@ export function CountriesTable() {
               rowCount={countries.length}
               rowClassName={rowClassName}
               rowGetter={({ index }) => countries[index]}
-              onRowClick={({ rowData }) =>
+              onRowClick={({ rowData }: { rowData: Country }) =>
                 dispatch(
                   setViewport({
-                    longitude: rowData.countryInfo.long,
-                    latitude: rowData.countryInfo.lat,
+                    longitude: rowData.coordinates.longitude,
+                    latitude: rowData.coordinates.latitude,
                     zoom: 6,
                   })
                 )
@@ -61,42 +66,47 @@ export function CountriesTable() {
                 width={countryWidth}
                 label="Country"
                 dataKey="country"
+                defaultSortDirection="ASC"
                 headerRenderer={headerRenderer}
               />
               <Column
                 label="Confirmed"
-                dataKey="cases"
+                dataKey={Status.Comfirmed}
+                defaultSortDirection="DESC"
                 width={colWidth}
                 headerRenderer={headerRenderer}
                 cellDataGetter={({ dataKey, rowData }) =>
-                  rowData[dataKey].toLocaleString()
+                  rowData.timeline[dataKey][date].toLocaleString()
                 }
               />
               <Column
                 label="Recovered"
-                dataKey="recovered"
+                dataKey={Status.Recovered}
+                defaultSortDirection="DESC"
                 width={colWidth}
                 headerRenderer={headerRenderer}
                 cellDataGetter={({ dataKey, rowData }) =>
-                  rowData[dataKey].toLocaleString()
+                  rowData.timeline[dataKey][date].toLocaleString()
                 }
               />
               <Column
                 label="Deaths"
-                dataKey="deaths"
+                dataKey={Status.Deaths}
+                defaultSortDirection="DESC"
                 width={colWidth}
                 headerRenderer={headerRenderer}
                 cellDataGetter={({ dataKey, rowData }) =>
-                  rowData[dataKey].toLocaleString()
+                  rowData.timeline[dataKey][date].toLocaleString()
                 }
               />
               <Column
                 label="Active"
-                dataKey="active"
+                dataKey={Status.Active}
+                defaultSortDirection="DESC"
                 width={colWidth}
                 headerRenderer={headerRenderer}
                 cellDataGetter={({ dataKey, rowData }) =>
-                  rowData[dataKey].toLocaleString()
+                  rowData.timeline[dataKey][date].toLocaleString()
                 }
               />
             </Table>

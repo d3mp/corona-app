@@ -1,10 +1,10 @@
-import { FilterType } from "../sideBar/sideBarSlice";
+import { Status } from "../countries/countriesTypes";
 
 export const COLORS_BY_FILTER_TYPE = {
-  cases: "#FF5733",
-  recovered: "#75FF33",
-  deaths: "#BD33FF",
-  active: "#FFBD33",
+  [Status.Comfirmed]: "#FF5733",
+  [Status.Recovered]: "#75FF33",
+  [Status.Deaths]: "#BD33FF",
+  [Status.Active]: "#FFBD33",
 };
 
 /**
@@ -33,16 +33,15 @@ export function getInOurPais(max: number = 1000000) {
 }
 
 /**
- * Creates specific expression for getting timeline information from  feature property
+ * Creates specific expression for getting timeline information from feature property
  * @param operator
  * @param date
- * @param filterType
+ * @param status
  */
 export function getTimelineExpression(
   operator: mapboxgl.ExpressionName = "get",
   date: string,
-  field: FilterType
+  status: Status
 ): mapboxgl.Expression {
-  // return [operator, date, ["get", field, ["get", "timeline"]]];
-  return [operator, field];
+  return [operator, date, ["get", status, ["get", "timeline"]]];
 }

@@ -1,4 +1,4 @@
-import moment, { Moment } from "moment";
+import { Moment } from "moment";
 import _ from "lodash";
 import { SortDirection, SortDirectionType } from "react-virtualized";
 import {
@@ -13,7 +13,7 @@ import {
   Country,
   TotalByCountry,
   CountriesByName,
-  CountriesTimelineByName,
+  Status,
 } from "./countriesTypes";
 import * as CoronaAPI from "../../api/corona";
 import { SHORT_DATE_FORMAT } from "../../common/constants/global";
@@ -30,24 +30,17 @@ export const fetchCountries = createAsyncThunk(
   async () => await CoronaAPI.getCountries()
 );
 
-export const fetchCountriesTimeline = createAsyncThunk(
-  "countries/fetchCountriesTimeline",
-  async () => await CoronaAPI.getCountriesTimeline()
-);
-
 // Slice
 
 interface CountriesState {
   loading: "idle" | "pending" | "succeeded" | "failed";
   countriesByName: CountriesByName;
-  countriesTimelineByName: CountriesTimelineByName;
   error: SerializedError | null;
 }
 
 const initialState: CountriesState = {
   loading: "idle",
   countriesByName: {},
-  countriesTimelineByName: {},
   error: null,
 };
 
@@ -64,38 +57,15 @@ export const countriesSlice = createSlice({
       })
       .addCase(
         fetchCountries.fulfilled,
-        (state, action: PayloadAction<Country[]>) => {
+        (state, action: PayloadAction<CountriesByName>) => {
           if (state.loading === "pending") {
             state.loading = "idle";
           }
 
-          state.countriesByName = action.payload.reduce(
-            (prev, curr) => ({ ...prev, [curr.country]: curr }),
-            {}
-          );
+          state.countriesByName = action.payload;
         }
       )
       .addCase(fetchCountries.rejected, (state, action) => {
-        state.error = action.error;
-      });
-
-    builder
-      .addCase(fetchCountriesTimeline.pending, (state) => {
-        if (state.loading === "idle") {
-          state.loading = "pending";
-        }
-      })
-      .addCase(fetchCountriesTimeline.fulfilled, (state, action) => {
-        if (state.loading === "pending") {
-          state.loading = "idle";
-        }
-
-        state.countriesTimelineByName = action.payload.reduce(
-          (prev, curr) => ({ ...prev, [curr.country]: curr }),
-          {}
-        );
-      })
-      .addCase(fetchCountriesTimeline.rejected, (state, action) => {
         state.error = action.error;
       });
   },
@@ -105,8 +75,6 @@ export const countriesSlice = createSlice({
 
 export const selectCountriesByName = (state: RootState) =>
   state.countries.countriesByName;
-export const selectCountriesTimelineByName = (state: RootState) =>
-  state.countries.countriesTimelineByName;
 
 export const selectCountries = createSelector(
   [selectCountriesByName],
@@ -114,70 +82,68 @@ export const selectCountries = createSelector(
 );
 
 export const selectCountriesByTimelineDate = createSelector(
-  [selectCountries, selectCountriesTimelineByName, selectMomentTimelineDate],
-  (
-    countries: Country[],
-    countriesTimelineByName: CountriesTimelineByName,
-    timelinDate: Moment
-  ) => {
-    const date: string = timelinDate.format(SHORT_DATE_FORMAT);
-    const today: Moment = moment();
+  [selectCountries, selectMomentTimelineDate],
+  (countries: Country[], timelineDate: Moment) => {
+    const date: string = timelineDate.format(SHORT_DATE_FORMAT);
 
-    return countries.reduce((countries: Country[], country: Country) => {
-      const countryTimeline =
-        countriesTimelineByName[country.country]?.timeline || undefined;
-
-      if (timelinDate.isSame(today, "day")) {
-        countries.push(country);
-      } else if (countryTimeline) {
-        const cases = countryTimeline.cases[date] || 0;
-        const deaths = countryTimeline.deaths[date] || 0;
-        const recovered = countryTimeline.recovered[date] || 0;
-        const active = cases - deaths - recovered;
-
-        if (cases || deaths || recovered || active) {
-          countries.push({
-            ...country,
-            cases,
-            deaths,
-            recovered,
-            active,
-          });
-        }
-      }
-
-      return countries;
-    }, []);
+    return countries.filter((country: Country) => {
+      return (
+        country.timeline.active[date] ||
+        country.timeline.confirmed[date] ||
+        country.timeline.deaths[date] ||
+        country.timeline.recovered[date]
+      );
+    });
   }
 );
 
 export const selectSortedCountriesByTimelineDate = createSelector(
-  [selectCountriesByTimelineDate, selectSortBy, selectSortDirection],
-  (countries: Country[], sortBy: string, sortDirection: SortDirectionType) => {
+  [
+    selectCountriesByTimelineDate,
+    selectMomentTimelineDate,
+    selectSortBy,
+    selectSortDirection,
+  ],
+  (
+    countries: Country[],
+    timelineDate: Moment,
+    sortBy: string,
+    sortDirection: SortDirectionType
+  ) => {
+    const date: string = timelineDate.format(SHORT_DATE_FORMAT);
+    const isSortByStatus = Object.values(Status as any).includes(sortBy);
+
     return _.orderBy(
       countries,
-      sortBy,
+      (country: Country) => {
+        if (isSortByStatus) {
+          return country.timeline[sortBy as Status][date];
+        }
+
+        return country[sortBy as keyof Country];
+      },
       sortDirection === SortDirection.ASC ? "asc" : "desc"
     ).map((country, index) => ({ ...country, index: index + 1 }));
   }
 );
 
 export const selectSumDataByTimelineDate = createSelector(
-  [selectCountriesByTimelineDate],
-  (countries: Country[]) => {
+  [selectCountriesByTimelineDate, selectMomentTimelineDate],
+  (countries: Country[], timelineDate: Moment) => {
     const defaultValues: TotalByCountry = {
       active: 0,
-      cases: 0,
+      confirmed: 0,
       deaths: 0,
       recovered: 0,
     };
+    const date: string = timelineDate.format(SHORT_DATE_FORMAT);
 
-    return countries.reduce((prev: TotalByCountry, country: Country) => {
+    return countries.reduce((total: TotalByCountry, country: Country) => {
       return {
-        active: prev.active + country.active,
-        cases: prev.cases + country.cases,
-        deaths: prev.deaths + country.deaths,
-        recovered: prev.recovered + country.recovered,
+        active: total.active + country.timeline.active[date],
+        confirmed: total.confirmed + country.timeline.confirmed[date],
+        deaths: total.deaths + country.timeline.deaths[date],
+        recovered: total.recovered + country.timeline.recovered[date],
       };
     }, defaultValues);
   }
@@ -191,27 +157,21 @@ export const selectlCountriesByTimelineFC = createSelector(
       Country
     > = {
       type: "FeatureCollection",
-      features: countries
-        .filter((country) => country.countryInfo._id)
-        .map((country) => {
-          const feature: GeoJSON.Feature<GeoJSON.Point, Country> = {
-            type: "Feature",
-            geometry: {
-              type: "Point",
-              coordinates: [country.countryInfo.long, country.countryInfo.lat],
-            },
-            properties: country,
-            // properties: {
-            //   ...country,
-            //   countryInfo: {
-            //     ...country.countryInfo,
-            //     population: population[country.country],
-            //   },
-            // },
-          };
+      features: countries.map((country) => {
+        const feature: GeoJSON.Feature<GeoJSON.Point, Country> = {
+          type: "Feature",
+          geometry: {
+            type: "Point",
+            coordinates: [
+              country.coordinates.longitude,
+              country.coordinates.latitude,
+            ],
+          },
+          properties: country,
+        };
 
-          return feature;
-        }),
+        return feature;
+      }),
     };
 
     return featuerCollection;

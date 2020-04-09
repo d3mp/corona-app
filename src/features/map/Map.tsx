@@ -16,11 +16,11 @@ import {
 import { selectViewPort } from "./mapSlice";
 import {
   selectMomentTimelineDate,
-  selectFilterType,
-  FilterType,
+  selectFilterBy,
 } from "../sideBar/sideBarSlice";
 import { selectlCountriesByTimelineFC } from "../countries/countriesSlice";
 import { SHORT_DATE_FORMAT } from "../../common/constants/global";
+import { Status } from "../countries/countriesTypes";
 
 import styles from "./Map.module.css";
 
@@ -31,12 +31,12 @@ function Map() {
     initialViewport
   );
   const featureCollection = useSelector(selectlCountriesByTimelineFC);
-  const filterType: FilterType = useSelector(selectFilterType);
+  const filterBy: Status = useSelector(selectFilterBy);
   const date: string = useSelector(selectMomentTimelineDate).format(
     SHORT_DATE_FORMAT
   );
-  const hasCasesExpression = getTimelineExpression("has", date, filterType);
-  const getCasesExpression = getTimelineExpression("get", date, filterType);
+  const hasCasesExpression = getTimelineExpression("has", date, filterBy);
+  const getCasesExpression = getTimelineExpression("get", date, filterBy);
 
   useEffect(() => {
     // fly to the new position
@@ -70,10 +70,10 @@ function Map() {
                 getCasesExpression,
                 ...getInOurPais(),
               ],
-              "circle-color": COLORS_BY_FILTER_TYPE[filterType],
+              "circle-color": COLORS_BY_FILTER_TYPE[filterBy],
               "circle-opacity": 0.4,
               "circle-stroke-width": 1,
-              "circle-stroke-color": COLORS_BY_FILTER_TYPE[filterType],
+              "circle-stroke-color": COLORS_BY_FILTER_TYPE[filterBy],
             }}
           />
           <Layer

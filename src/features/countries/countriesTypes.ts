@@ -1,30 +1,39 @@
+export enum Status {
+  Active = "active",
+  Comfirmed = "confirmed",
+  Deaths = "deaths",
+  Recovered = "recovered",
+}
+
 export interface Country {
   country: string;
-  countryInfo: {
-    _id: number;
-    iso2: string;
-    iso3: string;
-    lat: number;
-    long: number;
-    flag: string;
-    population: number | null;
+  province: string | null;
+  coordinates: {
+    latitude: number;
+    longitude: number;
   };
-  active: number;
-  cases: number;
-  critical: number;
-  deaths: number;
-  todayCases: number;
-  todayDeaths: number;
-  recovered: number;
-  casesPerOneMillion: number;
-  deathsPerOneMillion: number;
-  updated: Date;
-  timeline: Pick<CountryTimeline, "timeline">;
+  timeline: Timeline;
+  updated?: Date;
+}
+
+export type Province = Country;
+export interface TimelineDates {
+  [date: string]: number;
+}
+export interface Timeline {
+  [Status.Active]: TimelineDates;
+  [Status.Comfirmed]: TimelineDates;
+  [Status.Deaths]: TimelineDates;
+  [Status.Recovered]: TimelineDates;
+}
+
+export interface CountriesByName {
+  [countryName: string]: Country;
 }
 
 export interface TotalByCountry {
   active: number;
-  cases: number;
+  confirmed: number;
   deaths: number;
   recovered: number;
 }
@@ -43,12 +52,4 @@ export interface CountryTimeline {
       [date: string]: number;
     };
   };
-}
-
-export interface CountriesByName {
-  [countryName: string]: Country;
-}
-
-export interface CountriesTimelineByName {
-  [countryName: string]: CountryTimeline;
 }

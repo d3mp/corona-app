@@ -14,7 +14,7 @@ export const store = configureStore({
     map,
     sideBar,
   },
-  middleware: getDefaultMiddleware({ immutableCheck: false }),
+  middleware: getDefaultMiddleware(),
 });
 
 export type RootState = ReturnType<typeof store.getState>;
