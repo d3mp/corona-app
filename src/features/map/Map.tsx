@@ -1,4 +1,4 @@
-import React, { useState, useRef, memo, useEffect } from "react";
+import React, { useState, useRef, memo, useEffect, useCallback } from "react";
 import { useSelector } from "react-redux";
 import MapGL, {
   Source,
@@ -7,6 +7,7 @@ import MapGL, {
   FlyToInterpolator,
   InteractiveMapProps,
 } from "react-map-gl";
+import { Feature } from "geojson";
 import "mapbox-gl/dist/mapbox-gl.css";
 import {
   getInOurPais,
@@ -18,9 +19,13 @@ import {
   selectMomentTimelineDate,
   selectFilterBy,
 } from "../sideBar/sideBarSlice";
-import { selectlCountriesByTimelineFC } from "../countries/countriesSlice";
+import {
+  selectlCountriesByTimelineFC,
+  selectCountriesByName,
+} from "../countries/countriesSlice";
 import { SHORT_DATE_FORMAT } from "../../common/constants/global";
-import { Status } from "../countries/countriesTypes";
+import { Status, Country, CountriesByName } from "../countries/countriesTypes";
+import { Nullable } from "../../genericTypes";
 
 import styles from "./Map.module.css";
 
@@ -30,6 +35,16 @@ function Map() {
   const [viewport, setViewport] = useState<Partial<InteractiveMapProps>>(
     initialViewport
   );
+  const [hoveredCountry, setHoveredCountry] = useState<{
+    country: Nullable<Country>;
+    offsetX: number;
+    offsetY: number;
+  }>({
+    country: null,
+    offsetX: 0,
+    offsetY: 0,
+  });
+  const countriesByName: CountriesByName = useSelector(selectCountriesByName);
   const featureCollection = useSelector(selectlCountriesByTimelineFC);
   const filterBy: Status = useSelector(selectFilterBy);
   const date: string = useSelector(selectMomentTimelineDate).format(
@@ -37,6 +52,32 @@ function Map() {
   );
   const hasCasesExpression = getTimelineExpression("has", date, filterBy);
   const getCasesExpression = getTimelineExpression("get", date, filterBy);
+  const onHover = useCallback(
+    ({ features = [], srcEvent: { offsetX, offsetY } }) => {
+      const feature: Feature = features.find((f: any) =>
+        ["label", "point"].includes(f.layer.id)
+      );
+
+      if (feature && feature.properties && feature.properties.country) {
+        if (hoveredCountry.country !== feature.properties.country) {
+          return setHoveredCountry({
+            offsetX,
+            offsetY,
+            country: countriesByName[feature.properties.country],
+          });
+        }
+      } else {
+        if (hoveredCountry.country) {
+          return setHoveredCountry({
+            offsetX: 0,
+            offsetY: 0,
+            country: null,
+          });
+        }
+      }
+    },
+    [countriesByName, hoveredCountry]
+  );
 
   useEffect(() => {
     // fly to the new position
@@ -57,6 +98,7 @@ function Map() {
         mapStyle="mapbox://styles/mapbox/dark-v10"
         mapboxApiAccessToken="pk.eyJ1IjoiZGVtcGtoIiwiYSI6ImNrOGZwanFuazAxdnozbG4yNm1tOHVuYzkifQ.fRJrCsndLJ4yM-jlPaAG9Q"
         onViewportChange={(nextViewport) => setViewport(nextViewport)}
+        onHover={onHover}
       >
         <Source id="data" type="geojson" data={featureCollection}>
           <Layer
@@ -90,6 +132,49 @@ function Map() {
             }}
           />
         </Source>
+        {hoveredCountry.country ? (
+          <div
+            className={styles.tooltip}
+            style={{
+              top: hoveredCountry.offsetY,
+              left: hoveredCountry.offsetX,
+            }}
+          >
+            <b>{hoveredCountry.country.country}</b>
+            <div>
+              <span>Confirmed:</span>
+              <span style={{ color: COLORS_BY_FILTER_TYPE[Status.Comfirmed] }}>
+                {hoveredCountry.country.timeline[Status.Comfirmed][
+                  date
+                ]?.toLocaleString() || 0}
+              </span>
+            </div>
+            <div>
+              <span>Deaths:</span>
+              <span style={{ color: COLORS_BY_FILTER_TYPE[Status.Deaths] }}>
+                {hoveredCountry.country.timeline[Status.Deaths][
+                  date
+                ]?.toLocaleString() || 0}
+              </span>
+            </div>
+            <div>
+              <span>Recovered:</span>
+              <span style={{ color: COLORS_BY_FILTER_TYPE[Status.Recovered] }}>
+                {hoveredCountry.country.timeline[Status.Recovered][
+                  date
+                ]?.toLocaleString() || 0}
+              </span>
+            </div>
+            <div>
+              <span>Active:</span>
+              <span style={{ color: COLORS_BY_FILTER_TYPE[Status.Active] }}>
+                {hoveredCountry.country.timeline[Status.Active][
+                  date
+                ]?.toLocaleString() || 0}
+              </span>
+            </div>
+          </div>
+        ) : null}
       </MapGL>
     </div>
   );

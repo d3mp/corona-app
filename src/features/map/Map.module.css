@@ -1,3 +1,29 @@
 .mapContainer {
   flex: 1;
 }
+
+.tooltip {
+  position: absolute;
+  margin: 8px;
+  padding: 10px;
+  color: #dedede;
+  background-color: #343332;
+  border: 2px solid #2b2a2a;
+  max-width: 300px;
+  font-size: 12px;
+  pointer-events: none;
+}
+
+.tooltip div {
+  display: flex;
+}
+
+.tooltip div span {
+  flex: 1;
+  padding-top: 5px;
+}
+
+.tooltip div span:last-child {
+  padding-left: 10px;
+  text-align: right;
+}
