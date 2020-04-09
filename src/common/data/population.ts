@@ -1,4 +1,6 @@
-export const population: { [key: string]: number | null } = {
+import { HashMap, Nullable } from "../../genericTypes";
+
+export const population: HashMap<Nullable<number>> = {
   Afghanistan: 35530081,
   Albania: 2930187,
   Algeria: 41318142,

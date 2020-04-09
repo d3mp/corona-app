@@ -22,6 +22,7 @@ import {
   selectSortDirection,
   selectMomentTimelineDate,
 } from "../sideBar/sideBarSlice";
+import { Nullable } from "../../genericTypes";
 
 // Async actions
 
@@ -35,7 +36,7 @@ export const fetchCountries = createAsyncThunk(
 interface CountriesState {
   loading: "idle" | "pending" | "succeeded" | "failed";
   countriesByName: CountriesByName;
-  error: SerializedError | null;
+  error: Nullable<SerializedError>;
 }
 
 const initialState: CountriesState = {

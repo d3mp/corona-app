@@ -1,12 +1,11 @@
+import moment from "moment";
 import {
   Country,
   Status,
-  Province,
   Timeline,
   CountriesByName,
   TimelineDates,
 } from "../features/countries/countriesTypes";
-import moment from "moment";
 import { SHORT_DATE_FORMAT } from "../common/constants/global";
 
 const defaultTimeline: Timeline = {
@@ -126,7 +125,7 @@ function getHistoricalCountriesWithProvincesByGlobalName(
   countriesByName: CountriesByName
 ): CountriesByName {
   return response.reduce((prev: CountriesByName, curr: any) => {
-    const maybeProvince: Country | Province = {
+    const country: Country = {
       country:
         countriesByName[curr.country]?.country ||
         convertHistoricalNameToGlobal(curr.country),
@@ -160,29 +159,27 @@ function getHistoricalCountriesWithProvincesByGlobalName(
       "Australia",
       "China",
       "Canada",
-    ].includes(maybeProvince.country);
+    ].includes(country.country);
 
-    if (!prev[maybeProvince.country]) {
-      if (!maybeProvince.province || shouldSummarizeProvinces) {
-        prev[maybeProvince.country] = {
-          ...maybeProvince,
+    if (!prev[country.country]) {
+      if (!country.province || shouldSummarizeProvinces) {
+        prev[country.country] = {
+          ...country,
           province: null,
-          timeline: maybeProvince.province
-            ? defaultTimeline
-            : maybeProvince.timeline,
+          timeline: country.province ? defaultTimeline : country.timeline,
         };
       }
     }
 
-    if (maybeProvince.province) {
-      prev[maybeProvince.province] = maybeProvince;
+    if (country.province) {
+      prev[country.province] = country;
     }
 
-    if (prev[maybeProvince.country] && maybeProvince.province) {
+    if (prev[country.country] && country.province) {
       if (shouldSummarizeProvinces) {
-        prev[maybeProvince.country].timeline = sumTimelines(
-          prev[maybeProvince.country].timeline,
-          maybeProvince.timeline
+        prev[country.country].timeline = sumTimelines(
+          prev[country.country].timeline,
+          country.timeline
         );
       }
     }

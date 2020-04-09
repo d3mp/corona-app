@@ -1,3 +1,5 @@
+import { Nullable, HashMap } from "../../genericTypes";
+
 export enum Status {
   Active = "active",
   Comfirmed = "confirmed",
@@ -7,7 +9,7 @@ export enum Status {
 
 export interface Country {
   country: string;
-  province: string | null;
+  province: Nullable<string>;
   coordinates: {
     latitude: number;
     longitude: number;
@@ -16,10 +18,9 @@ export interface Country {
   updated?: Date;
 }
 
-export type Province = Country;
-export interface TimelineDates {
-  [date: string]: number;
-}
+export type CountriesByName = HashMap<Country>;
+export type TimelineDates = HashMap<number>;
+
 export interface Timeline {
   [Status.Active]: TimelineDates;
   [Status.Comfirmed]: TimelineDates;
@@ -27,8 +28,11 @@ export interface Timeline {
   [Status.Recovered]: TimelineDates;
 }
 
-export interface CountriesByName {
-  [countryName: string]: Country;
+export interface Timeline {
+  [Status.Active]: HashMap<number>;
+  [Status.Comfirmed]: HashMap<number>;
+  [Status.Deaths]: HashMap<number>;
+  [Status.Recovered]: HashMap<number>;
 }
 
 export interface TotalByCountry {
@@ -36,20 +40,4 @@ export interface TotalByCountry {
   confirmed: number;
   deaths: number;
   recovered: number;
-}
-
-export interface CountryTimeline {
-  country: string;
-  province: string | null;
-  timeline: {
-    cases: {
-      [date: string]: number;
-    };
-    deaths: {
-      [date: string]: number;
-    };
-    recovered: {
-      [date: string]: number;
-    };
-  };
 }
