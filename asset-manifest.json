@@ -1,0 +1,25 @@
+{
+  "files": {
+    "main.css": "/corona-app/static/css/main.0e1469b6.chunk.css",
+    "main.js": "/corona-app/static/js/main.214692b0.chunk.js",
+    "main.js.map": "/corona-app/static/js/main.214692b0.chunk.js.map",
+    "runtime-main.js": "/corona-app/static/js/runtime-main.e426d2a9.js",
+    "runtime-main.js.map": "/corona-app/static/js/runtime-main.e426d2a9.js.map",
+    "static/css/2.b4a16772.chunk.css": "/corona-app/static/css/2.b4a16772.chunk.css",
+    "static/js/2.c414317a.chunk.js": "/corona-app/static/js/2.c414317a.chunk.js",
+    "static/js/2.c414317a.chunk.js.map": "/corona-app/static/js/2.c414317a.chunk.js.map",
+    "index.html": "/corona-app/index.html",
+    "precache-manifest.1ef6235ff134aef990535d02099286a4.js": "/corona-app/precache-manifest.1ef6235ff134aef990535d02099286a4.js",
+    "service-worker.js": "/corona-app/service-worker.js",
+    "static/css/2.b4a16772.chunk.css.map": "/corona-app/static/css/2.b4a16772.chunk.css.map",
+    "static/css/main.0e1469b6.chunk.css.map": "/corona-app/static/css/main.0e1469b6.chunk.css.map",
+    "static/js/2.c414317a.chunk.js.LICENSE.txt": "/corona-app/static/js/2.c414317a.chunk.js.LICENSE.txt"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.e426d2a9.js",
+    "static/css/2.b4a16772.chunk.css",
+    "static/js/2.c414317a.chunk.js",
+    "static/css/main.0e1469b6.chunk.css",
+    "static/js/main.214692b0.chunk.js"
+  ]
+}
