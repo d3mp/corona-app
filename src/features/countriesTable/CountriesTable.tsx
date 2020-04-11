@@ -53,15 +53,19 @@ export function CountriesTable() {
                 rowCount={countries.length}
                 rowClassName={rowClassName}
                 rowGetter={({ index }) => countries[index]}
-                onRowClick={({ rowData }: { rowData: Country }) =>
+                onRowClick={({ rowData }: { rowData: Country }) => {
+                  if (isTableVisibleOnMobile) {
+                    dispatch(toggleTableVisibility());
+                  }
+
                   dispatch(
                     setViewport({
                       longitude: rowData.coordinates.longitude,
                       latitude: rowData.coordinates.latitude,
                       zoom: 6,
                     })
-                  )
-                }
+                  );
+                }}
                 sort={({ sortBy, sortDirection }) =>
                   dispatch(sort({ sortBy, sortDirection }))
                 }
