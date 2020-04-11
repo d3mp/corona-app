@@ -1,0 +1,7 @@
+.App.dark {
+  --text-color-primary: #dedede;
+  --background-color-primary: #343332;
+  --background-color-secondary: #403f3f;
+
+  --border-color-primary: #2b2a2a;
+}

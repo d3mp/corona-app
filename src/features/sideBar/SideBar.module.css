@@ -2,21 +2,30 @@
   width: 500px;
   display: flex;
   flex-direction: column;
-  background-color: #343332;
-  border-right: 2px solid #2b2a2a;
+  background-color: var(--background-color-primary);
+  border-right: 2px solid var(--border-color-primary);
+}
+
+@media only screen and (max-width: 900px) {
+  .sideBar {
+    width: 100%;
+  }
+
+  .sideBar.open {
+    height: 100%;
+  }
 }
 
 .header {
   display: flex;
-  padding: 10px;
-  border-bottom: 2px solid #2b2a2a;
+  padding: 0.5rem;
+  border-bottom: 2px solid var(--border-color-primary);
 }
 
 .headerStat {
   flex: 1;
-  color: #dedede;
+  color: var(--text-color-primary);
   text-align: center;
-  padding: 5px;
   cursor: pointer;
 }
 
@@ -25,16 +34,9 @@
 }
 
 .headerStatLabel {
-  font-size: 12px;
+  font-size: 0.75rem;
 }
 
 .headerStatTotalQuantity {
-  font-size: 16px;
   font-weight: bold;
-}
-
-.body {
-  display: flex;
-  flex: 1;
-  flex-direction: column;
 }

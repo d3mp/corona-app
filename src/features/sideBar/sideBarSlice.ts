@@ -9,6 +9,7 @@ interface SideBarState {
   sortBy: string;
   sortDirection: SortDirectionType;
   timelineDate: string; // ISO format
+  isTableVisibleOnMobile: boolean;
 }
 
 const initialState: SideBarState = {
@@ -16,6 +17,7 @@ const initialState: SideBarState = {
   sortBy: Status.Comfirmed,
   sortDirection: SortDirection.DESC,
   timelineDate: moment().format(),
+  isTableVisibleOnMobile: false,
 };
 
 export const sideBarSlice = createSlice({
@@ -38,6 +40,9 @@ export const sideBarSlice = createSlice({
       state.sortBy = action.payload.sortBy;
       state.sortDirection = action.payload.sortDirection;
     },
+    toggleTableVisibility: (state) => {
+      state.isTableVisibleOnMobile = !state.isTableVisibleOnMobile;
+    },
   },
 });
 
@@ -49,11 +54,18 @@ export const selectSortDirection = (state: RootState) =>
 export const selectTimelineDate = (state: RootState) =>
   state.sideBar.timelineDate;
 export const selectFilterBy = (state: RootState) => state.sideBar.filterBy;
+export const selectIsTableVisibleOnMobile = (state: RootState) =>
+  state.sideBar.isTableVisibleOnMobile;
 
 export const selectMomentTimelineDate = createSelector(
   [selectTimelineDate],
   (timelineDate: string) => moment(timelineDate)
 );
 
-export const { setFilterType, setTimelineDate, sort } = sideBarSlice.actions;
+export const {
+  setFilterType,
+  setTimelineDate,
+  sort,
+  toggleTableVisibility,
+} = sideBarSlice.actions;
 export default sideBarSlice.reducer;

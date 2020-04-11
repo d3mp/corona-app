@@ -1,44 +1,28 @@
+@import "../common/theme/dark.css";
+@import "../common/theme/light.css";
+
+html,
+body,
+#root {
+  height: 100%;
+  width: 100%;
+  position: fixed; /* Prevents Chrome mobile issue with URL Bar resizing */
+  font-size: 100%;
+  box-sizing: border-box;
+}
+
 *:focus {
   outline: none;
 }
+
 .App {
+  height: 100%;
   display: flex;
   flex-direction: row;
-  /* text-align: center; */
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-float infinite 3s ease-in-out;
-  }
-}
-
-.App-header {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-}
-
-.App-link {
-  color: rgb(112, 76, 182);
-}
-
-@keyframes App-logo-float {
-  0% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(10px);
-  }
-  100% {
-    transform: translateY(0px);
+@media only screen and (max-width: 900px) {
+  .App {
+    flex-direction: column;
   }
 }

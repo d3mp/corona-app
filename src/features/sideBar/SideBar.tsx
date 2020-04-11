@@ -1,6 +1,7 @@
 import React from "react";
 import moment, { Moment } from "moment";
 import { useSelector, useDispatch } from "react-redux";
+import clsx from "clsx";
 import { HeaderOption } from "./HeaderOption";
 import { CountriesTable } from "../countriesTable/CountriesTable";
 import { selectSumDataByTimelineDate } from "../countries/countriesSlice";
@@ -9,6 +10,7 @@ import {
   setTimelineDate,
   setFilterType,
   selectFilterBy,
+  selectIsTableVisibleOnMobile,
 } from "./sideBarSlice";
 import TimelinePanel from "./TimelinePanel";
 import { COLORS_BY_FILTER_TYPE } from "../map/mapUtils";
@@ -21,9 +23,14 @@ export function SideBar() {
   const date: Moment = useSelector(selectMomentTimelineDate);
   const filterBy: Status = useSelector(selectFilterBy);
   const sumData = useSelector(selectSumDataByTimelineDate);
+  const isTableVisibleOnMobile: boolean = useSelector(
+    selectIsTableVisibleOnMobile
+  );
 
   return (
-    <div className={styles.sideBar}>
+    <div
+      className={clsx(styles.sideBar, isTableVisibleOnMobile && styles.open)}
+    >
       <div className={styles.header}>
         <HeaderOption
           label="Confirmed"
@@ -54,15 +61,13 @@ export function SideBar() {
           onClick={() => dispatch(setFilterType(Status.Active))}
         />
       </div>
-      <div className={styles.body}>
-        <TimelinePanel
-          date={moment(date)}
-          onChange={(date) => dispatch(setTimelineDate(date.format()))}
-          minDate={moment("2020-01-22T00:00:00")}
-          maxDate={moment()}
-        />
-        <CountriesTable />
-      </div>
+      <TimelinePanel
+        date={moment(date)}
+        onChange={(date) => dispatch(setTimelineDate(date.format()))}
+        minDate={moment("2020-01-22T00:00:00")}
+        maxDate={moment()}
+      />
+      <CountriesTable />
     </div>
   );
 }

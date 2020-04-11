@@ -1,7 +1,7 @@
 .timeline-panel {
-  color: #dedede;
-  font-size: 14px;
-  padding: 10px;
+  color: var(--text-color-primary);
+  font-size: 0.875rem;
+  padding: 0.5rem;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
   cursor: auto;
 }

@@ -7,8 +7,8 @@ import MapGL, {
   FlyToInterpolator,
   InteractiveMapProps,
 } from "react-map-gl";
-import { Feature } from "geojson";
 import "mapbox-gl/dist/mapbox-gl.css";
+import { Feature } from "geojson";
 import {
   getInOurPais,
   getTimelineExpression,
@@ -94,7 +94,7 @@ function Map() {
         ref={mapRef}
         {...viewport}
         width="100%"
-        height="100vh"
+        height="100%"
         mapStyle="mapbox://styles/mapbox/dark-v10"
         mapboxApiAccessToken="pk.eyJ1IjoiZGVtcGtoIiwiYSI6ImNrOGZwanFuazAxdnozbG4yNm1tOHVuYzkifQ.fRJrCsndLJ4yM-jlPaAG9Q"
         onViewportChange={(nextViewport) => setViewport(nextViewport)}
