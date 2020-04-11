@@ -1,4 +1,11 @@
-import React, { useState, useRef, memo, useEffect, useCallback } from "react";
+import React, {
+  useState,
+  useRef,
+  memo,
+  useEffect,
+  useCallback,
+  useContext,
+} from "react";
 import { useSelector } from "react-redux";
 import MapGL, {
   Source,
@@ -28,9 +35,11 @@ import { Status, Country, CountriesByName } from "../countries/countriesTypes";
 import { Nullable } from "../../genericTypes";
 
 import styles from "./Map.module.css";
+import { ThemeContext, Theme } from "../../common/theme/ThemeContext";
 
 function Map() {
   const mapRef = useRef<InteractiveMap>(null);
+  const { theme } = useContext(ThemeContext);
   const initialViewport = useSelector(selectViewPort);
   const [viewport, setViewport] = useState<Partial<InteractiveMapProps>>(
     initialViewport
@@ -95,7 +104,7 @@ function Map() {
         {...viewport}
         width="100%"
         height="100%"
-        mapStyle="mapbox://styles/mapbox/dark-v10"
+        mapStyle={`mapbox://styles/mapbox/${theme}-v10`}
         mapboxApiAccessToken="pk.eyJ1IjoiZGVtcGtoIiwiYSI6ImNrOGZwanFuazAxdnozbG4yNm1tOHVuYzkifQ.fRJrCsndLJ4yM-jlPaAG9Q"
         onViewportChange={(nextViewport) => setViewport(nextViewport)}
         onHover={onHover}
@@ -123,7 +132,7 @@ function Map() {
             type="symbol"
             filter={["all", hasCasesExpression, [">", getCasesExpression, 0]]}
             paint={{
-              "text-color": "#EBEBEB",
+              "text-color": theme === Theme.Light ? "#3B3B3B" : "#EBEBEB",
             }}
             layout={{
               "text-field": getCasesExpression,

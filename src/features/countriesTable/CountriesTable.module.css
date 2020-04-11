@@ -60,4 +60,5 @@
 .evenRow:hover,
 .oddRow:hover {
   background-color: var(--background-color-secondary);
+  opacity: 0.8;
 }

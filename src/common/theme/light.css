@@ -1,7 +1,7 @@
 .App.light {
-  --text-color-primary: #343332;
-  --background-color-primary: #dedede;
-  --background-color-secondary: #a3a3a3;
+  --text-color-primary: #6b6b6b;
+  --background-color-primary: #f0f0ef;
+  --background-color-secondary: #cbd2d3;
 
-  --border-color-primary: #8b8b8b;
+  --border-color-primary: #cbd2d3;
 }
