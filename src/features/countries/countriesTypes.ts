@@ -2,7 +2,7 @@ import { HashMap, Nullable } from "../../genericTypes";
 
 export enum Status {
   Active = "active",
-  Comfirmed = "confirmed",
+  Confirmed = "confirmed",
   Deaths = "deaths",
   Recovered = "recovered",
 }
@@ -23,14 +23,14 @@ export type TimelineDates = HashMap<number>;
 
 export interface Timeline {
   [Status.Active]: TimelineDates;
-  [Status.Comfirmed]: TimelineDates;
+  [Status.Confirmed]: TimelineDates;
   [Status.Deaths]: TimelineDates;
   [Status.Recovered]: TimelineDates;
 }
 
 export interface Timeline {
   [Status.Active]: HashMap<number>;
-  [Status.Comfirmed]: HashMap<number>;
+  [Status.Confirmed]: HashMap<number>;
   [Status.Deaths]: HashMap<number>;
   [Status.Recovered]: HashMap<number>;
 }

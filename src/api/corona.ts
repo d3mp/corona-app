@@ -10,7 +10,7 @@ import {
 
 const defaultTimeline: Timeline = {
   [Status.Active]: {},
-  [Status.Comfirmed]: {},
+  [Status.Confirmed]: {},
   [Status.Deaths]: {},
   [Status.Recovered]: {},
 };
@@ -43,7 +43,7 @@ export async function getCountries(): Promise<CountriesByName> {
         ? historicalCountry.timeline
         : defaultTimeline;
 
-      if (!Object.keys(timeline[Status.Comfirmed]).length) {
+      if (!Object.keys(timeline[Status.Confirmed]).length) {
         console.warn("countries without timeline", country);
       }
 
@@ -56,9 +56,9 @@ export async function getCountries(): Promise<CountriesByName> {
               ...timeline[Status.Active],
               ...country.timeline[Status.Active],
             },
-            [Status.Comfirmed]: {
-              ...timeline[Status.Comfirmed],
-              ...country.timeline[Status.Comfirmed],
+            [Status.Confirmed]: {
+              ...timeline[Status.Confirmed],
+              ...country.timeline[Status.Confirmed],
             },
             [Status.Deaths]: {
               ...timeline[Status.Deaths],
@@ -95,7 +95,7 @@ function getCountriesByHistoricalName(response: []): CountriesByName {
         [Status.Active]: {
           [date]: value.cases - value.deaths - value.recovered,
         },
-        [Status.Comfirmed]: {
+        [Status.Confirmed]: {
           [date]: value.cases,
         },
         [Status.Deaths]: {
@@ -150,7 +150,7 @@ function getHistoricalCountriesWithProvincesByGlobalName(
           },
           {}
         ),
-        [Status.Comfirmed]: curr.timeline.cases,
+        [Status.Confirmed]: curr.timeline.cases,
         [Status.Deaths]: curr.timeline.deaths,
         [Status.Recovered]: curr.timeline.recovered,
       },

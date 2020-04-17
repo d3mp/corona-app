@@ -35,8 +35,8 @@ export function SideBar() {
           label="Confirmed"
           quantity={sumData.confirmed}
           activeColor={COLORS_BY_FILTER_TYPE[filterBy]}
-          isActive={filterBy === Status.Comfirmed}
-          onClick={() => dispatch(setFilterType(Status.Comfirmed))}
+          isActive={filterBy === Status.Confirmed}
+          onClick={() => dispatch(setFilterType(Status.Confirmed))}
         />
         <HeaderOption
           label="Recovered"

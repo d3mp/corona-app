@@ -87,7 +87,7 @@ export function CountriesTable() {
                 />
                 <Column
                   label="Confirmed"
-                  dataKey={Status.Comfirmed}
+                  dataKey={Status.Confirmed}
                   defaultSortDirection="DESC"
                   width={colWidth}
                   headerRenderer={headerRenderer}

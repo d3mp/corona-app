@@ -13,8 +13,8 @@ interface SideBarState {
 }
 
 const initialState: SideBarState = {
-  filterBy: Status.Comfirmed,
-  sortBy: Status.Comfirmed,
+  filterBy: Status.Confirmed,
+  sortBy: Status.Confirmed,
   sortDirection: SortDirection.DESC,
   timelineDate: moment().format(),
   isTableVisibleOnMobile: false,
