@@ -1,41 +1,40 @@
+import { Feature } from "geojson";
+import "mapbox-gl/dist/mapbox-gl.css";
 import React, {
-  useState,
-  useRef,
   memo,
-  useEffect,
   useCallback,
   useContext,
+  useEffect,
+  useRef,
+  useState,
 } from "react";
-import { useSelector } from "react-redux";
 import MapGL, {
-  Source,
-  Layer,
-  InteractiveMap,
   FlyToInterpolator,
+  InteractiveMap,
   InteractiveMapProps,
+  Layer,
+  Source,
 } from "react-map-gl";
-import "mapbox-gl/dist/mapbox-gl.css";
-import { Feature } from "geojson";
+import { useSelector } from "react-redux";
+import { SHORT_DATE_FORMAT } from "../../common/constants/global";
+import { Theme, ThemeContext } from "../../common/theme/ThemeContext";
+import { Nullable } from "../../genericTypes";
 import {
-  getInOurPais,
-  getTimelineExpression,
-  COLORS_BY_FILTER_TYPE,
-} from "./mapUtils";
+  selectCountriesByName,
+  selectlCountriesByTimelineFC,
+} from "../countries/countriesSlice";
+import { CountriesByName, Country, Status } from "../countries/countriesTypes";
+import {
+  selectFilterBy,
+  selectMomentTimelineDate,
+} from "../sideBar/sideBarSlice";
+import styles from "./Map.module.css";
 import { selectViewPort } from "./mapSlice";
 import {
-  selectMomentTimelineDate,
-  selectFilterBy,
-} from "../sideBar/sideBarSlice";
-import {
-  selectlCountriesByTimelineFC,
-  selectCountriesByName,
-} from "../countries/countriesSlice";
-import { SHORT_DATE_FORMAT } from "../../common/constants/global";
-import { Status, Country, CountriesByName } from "../countries/countriesTypes";
-import { Nullable } from "../../genericTypes";
-
-import styles from "./Map.module.css";
-import { ThemeContext, Theme } from "../../common/theme/ThemeContext";
+  COLORS_BY_FILTER_TYPE,
+  getInOurPais,
+  getTimelineExpression,
+} from "./mapUtils";
 
 function Map() {
   const mapRef = useRef<InteractiveMap>(null);

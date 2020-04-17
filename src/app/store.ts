@@ -1,8 +1,8 @@
 import {
-  configureStore,
-  ThunkAction,
   Action,
+  configureStore,
   getDefaultMiddleware,
+  ThunkAction,
 } from "@reduxjs/toolkit";
 import countries from "../features/countries/countriesSlice";
 import map from "../features/map/mapSlice";

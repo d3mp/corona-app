@@ -1,22 +1,21 @@
-import React from "react";
-import moment, { Moment } from "moment";
-import { useSelector, useDispatch } from "react-redux";
 import clsx from "clsx";
-import { HeaderOption } from "./HeaderOption";
-import { CountriesTable } from "../countriesTable/CountriesTable";
+import moment, { Moment } from "moment";
+import React from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { selectSumDataByTimelineDate } from "../countries/countriesSlice";
+import { Status } from "../countries/countriesTypes";
+import { CountriesTable } from "../countriesTable/CountriesTable";
+import { COLORS_BY_FILTER_TYPE } from "../map/mapUtils";
+import { HeaderOption } from "./HeaderOption";
+import styles from "./SideBar.module.css";
 import {
-  selectMomentTimelineDate,
-  setTimelineDate,
-  setFilterType,
   selectFilterBy,
   selectIsTableVisibleOnMobile,
+  selectMomentTimelineDate,
+  setFilterType,
+  setTimelineDate,
 } from "./sideBarSlice";
 import TimelinePanel from "./TimelinePanel";
-import { COLORS_BY_FILTER_TYPE } from "../map/mapUtils";
-import { Status } from "../countries/countriesTypes";
-
-import styles from "./SideBar.module.css";
 
 export function SideBar() {
   const dispatch = useDispatch();

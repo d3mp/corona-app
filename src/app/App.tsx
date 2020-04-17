@@ -1,12 +1,11 @@
-import React, { useEffect, useState } from "react";
 import clsx from "clsx";
-import Map from "../features/map/Map";
+import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
-import { SideBar } from "../features/sideBar/SideBar";
-import { fetchCountries } from "../features/countries/countriesSlice";
-import { ThemeContext, Theme } from "../common/theme/ThemeContext";
+import { Theme, ThemeContext } from "../common/theme/ThemeContext";
 import { getBrowserTheme } from "../common/theme/themeUtils";
-
+import { fetchCountries } from "../features/countries/countriesSlice";
+import Map from "../features/map/Map";
+import { SideBar } from "../features/sideBar/SideBar";
 import "./App.css";
 
 function App() {

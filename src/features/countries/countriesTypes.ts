@@ -1,4 +1,4 @@
-import { Nullable, HashMap } from "../../genericTypes";
+import { HashMap, Nullable } from "../../genericTypes";
 
 export enum Status {
   Active = "active",

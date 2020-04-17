@@ -1,22 +1,21 @@
+import clsx from "clsx";
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { AutoSizer, Table, Column, SortDirectionType } from "react-virtualized";
-import clsx from "clsx";
+import { AutoSizer, Column, SortDirectionType, Table } from "react-virtualized";
+import { SHORT_DATE_FORMAT } from "../../common/constants/global";
 import { selectSortedCountriesByTimelineDate } from "../countries/countriesSlice";
+import { Country, Status } from "../countries/countriesTypes";
+import { setViewport } from "../map/mapSlice";
 import {
+  selectIsTableVisibleOnMobile,
+  selectMomentTimelineDate,
   selectSortBy,
   selectSortDirection,
   sort,
-  selectMomentTimelineDate,
-  selectIsTableVisibleOnMobile,
   toggleTableVisibility,
 } from "../sideBar/sideBarSlice";
-import { headerRenderer } from "./CountriesTableHeader";
-import { Country, Status } from "../countries/countriesTypes";
-import { setViewport } from "../map/mapSlice";
-import { SHORT_DATE_FORMAT } from "../../common/constants/global";
-
 import styles from "./CountriesTable.module.css";
+import { headerRenderer } from "./CountriesTableHeader";
 
 export function CountriesTable() {
   const dispatch = useDispatch();

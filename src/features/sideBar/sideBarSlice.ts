@@ -1,7 +1,7 @@
+import { createSelector, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import moment from "moment";
-import { createSlice, PayloadAction, createSelector } from "@reduxjs/toolkit";
+import { SortDirection, SortDirectionType } from "react-virtualized";
 import { RootState } from "../../app/store";
-import { SortDirectionType, SortDirection } from "react-virtualized";
 import { Status } from "../countries/countriesTypes";
 
 interface SideBarState {

@@ -1,28 +1,28 @@
-import { Moment } from "moment";
-import _ from "lodash";
-import { SortDirection, SortDirectionType } from "react-virtualized";
 import {
-  createSlice,
   createAsyncThunk,
   createSelector,
+  createSlice,
   PayloadAction,
   SerializedError,
 } from "@reduxjs/toolkit";
-import { RootState } from "../../app/store";
-import {
-  Country,
-  TotalByCountry,
-  CountriesByName,
-  Status,
-} from "./countriesTypes";
+import _ from "lodash";
+import { Moment } from "moment";
+import { SortDirection, SortDirectionType } from "react-virtualized";
 import * as CoronaAPI from "../../api/corona";
+import { RootState } from "../../app/store";
 import { SHORT_DATE_FORMAT } from "../../common/constants/global";
+import { Nullable } from "../../genericTypes";
 import {
+  selectMomentTimelineDate,
   selectSortBy,
   selectSortDirection,
-  selectMomentTimelineDate,
 } from "../sideBar/sideBarSlice";
-import { Nullable } from "../../genericTypes";
+import {
+  CountriesByName,
+  Country,
+  Status,
+  TotalByCountry,
+} from "./countriesTypes";
 
 // Async actions
 

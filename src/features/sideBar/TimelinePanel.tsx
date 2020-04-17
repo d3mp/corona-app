@@ -1,5 +1,5 @@
-import React, { memo, useCallback } from "react";
 import moment, { Moment } from "moment";
+import React, { memo, useCallback } from "react";
 import "./TimelinePanel.css";
 
 interface TimelinePanelProps {
