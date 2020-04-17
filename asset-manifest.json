@@ -1,25 +1,25 @@
 {
   "files": {
-    "main.css": "/corona-app/static/css/main.bcad9920.chunk.css",
-    "main.js": "/corona-app/static/js/main.db0ff92e.chunk.js",
-    "main.js.map": "/corona-app/static/js/main.db0ff92e.chunk.js.map",
+    "main.css": "/corona-app/static/css/main.b137077a.chunk.css",
+    "main.js": "/corona-app/static/js/main.703ed960.chunk.js",
+    "main.js.map": "/corona-app/static/js/main.703ed960.chunk.js.map",
     "runtime-main.js": "/corona-app/static/js/runtime-main.e426d2a9.js",
     "runtime-main.js.map": "/corona-app/static/js/runtime-main.e426d2a9.js.map",
     "static/css/2.b4a16772.chunk.css": "/corona-app/static/css/2.b4a16772.chunk.css",
-    "static/js/2.91417833.chunk.js": "/corona-app/static/js/2.91417833.chunk.js",
-    "static/js/2.91417833.chunk.js.map": "/corona-app/static/js/2.91417833.chunk.js.map",
+    "static/js/2.04f6502c.chunk.js": "/corona-app/static/js/2.04f6502c.chunk.js",
+    "static/js/2.04f6502c.chunk.js.map": "/corona-app/static/js/2.04f6502c.chunk.js.map",
     "index.html": "/corona-app/index.html",
-    "precache-manifest.3cd2cc57176c874b4876acfcef2405a8.js": "/corona-app/precache-manifest.3cd2cc57176c874b4876acfcef2405a8.js",
+    "precache-manifest.6eb384f54f687eddcbdaea01e5d62ac4.js": "/corona-app/precache-manifest.6eb384f54f687eddcbdaea01e5d62ac4.js",
     "service-worker.js": "/corona-app/service-worker.js",
     "static/css/2.b4a16772.chunk.css.map": "/corona-app/static/css/2.b4a16772.chunk.css.map",
-    "static/css/main.bcad9920.chunk.css.map": "/corona-app/static/css/main.bcad9920.chunk.css.map",
-    "static/js/2.91417833.chunk.js.LICENSE.txt": "/corona-app/static/js/2.91417833.chunk.js.LICENSE.txt"
+    "static/css/main.b137077a.chunk.css.map": "/corona-app/static/css/main.b137077a.chunk.css.map",
+    "static/js/2.04f6502c.chunk.js.LICENSE.txt": "/corona-app/static/js/2.04f6502c.chunk.js.LICENSE.txt"
   },
   "entrypoints": [
     "static/js/runtime-main.e426d2a9.js",
     "static/css/2.b4a16772.chunk.css",
-    "static/js/2.91417833.chunk.js",
-    "static/css/main.bcad9920.chunk.css",
-    "static/js/main.db0ff92e.chunk.js"
+    "static/js/2.04f6502c.chunk.js",
+    "static/css/main.b137077a.chunk.css",
+    "static/js/main.703ed960.chunk.js"
   ]
 }
