@@ -1,12 +1,12 @@
 import moment from "moment";
+import { SHORT_DATE_FORMAT } from "../common/constants/global";
 import {
+  CountriesByName,
   Country,
   Status,
   Timeline,
-  CountriesByName,
   TimelineDates,
 } from "../features/countries/countriesTypes";
-import { SHORT_DATE_FORMAT } from "../common/constants/global";
 
 const defaultTimeline: Timeline = {
   [Status.Active]: {},
@@ -17,7 +17,7 @@ const defaultTimeline: Timeline = {
 
 export async function getCountries(): Promise<CountriesByName> {
   const urls: string[] = [
-    "https://corona.lmao.ninja/countries",
+    "https://corona.lmao.ninja/v2/countries",
     "https://corona.lmao.ninja/v2/historical?lastdays=all",
   ];
   const response = await Promise.all(
