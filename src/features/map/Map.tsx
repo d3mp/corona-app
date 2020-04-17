@@ -1,5 +1,6 @@
 import { Feature } from "geojson";
 import "mapbox-gl/dist/mapbox-gl.css";
+import { Moment } from "moment";
 import React, {
   memo,
   useCallback,
@@ -35,6 +36,7 @@ import {
   getInOurPais,
   getTimelineExpression,
 } from "./mapUtils";
+import { Tooltip } from "./tooltip/Tooltip";
 
 function Map() {
   const mapRef = useRef<InteractiveMap>(null);
@@ -55,9 +57,8 @@ function Map() {
   const countriesByName: CountriesByName = useSelector(selectCountriesByName);
   const featureCollection = useSelector(selectlCountriesByTimelineFC);
   const filterBy: Status = useSelector(selectFilterBy);
-  const date: string = useSelector(selectMomentTimelineDate).format(
-    SHORT_DATE_FORMAT
-  );
+  const currentMoment: Moment = useSelector(selectMomentTimelineDate);
+  const date: string = currentMoment.format(SHORT_DATE_FORMAT);
   const hasCasesExpression = getTimelineExpression("has", date, filterBy);
   const getCasesExpression = getTimelineExpression("get", date, filterBy);
   const onHover = useCallback(
@@ -140,49 +141,7 @@ function Map() {
             }}
           />
         </Source>
-        {hoveredCountry.country ? (
-          <div
-            className={styles.tooltip}
-            style={{
-              top: hoveredCountry.offsetY,
-              left: hoveredCountry.offsetX,
-            }}
-          >
-            <b>{hoveredCountry.country.country}</b>
-            <div>
-              <span>Confirmed:</span>
-              <span style={{ color: COLORS_BY_FILTER_TYPE[Status.Comfirmed] }}>
-                {hoveredCountry.country.timeline[Status.Comfirmed][
-                  date
-                ]?.toLocaleString() || 0}
-              </span>
-            </div>
-            <div>
-              <span>Deaths:</span>
-              <span style={{ color: COLORS_BY_FILTER_TYPE[Status.Deaths] }}>
-                {hoveredCountry.country.timeline[Status.Deaths][
-                  date
-                ]?.toLocaleString() || 0}
-              </span>
-            </div>
-            <div>
-              <span>Recovered:</span>
-              <span style={{ color: COLORS_BY_FILTER_TYPE[Status.Recovered] }}>
-                {hoveredCountry.country.timeline[Status.Recovered][
-                  date
-                ]?.toLocaleString() || 0}
-              </span>
-            </div>
-            <div>
-              <span>Active:</span>
-              <span style={{ color: COLORS_BY_FILTER_TYPE[Status.Active] }}>
-                {hoveredCountry.country.timeline[Status.Active][
-                  date
-                ]?.toLocaleString() || 0}
-              </span>
-            </div>
-          </div>
-        ) : null}
+        <Tooltip date={currentMoment} hoveredCountry={hoveredCountry} />
       </MapGL>
     </div>
   );
