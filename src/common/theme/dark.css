@@ -1,4 +1,4 @@
-.App.dark {
+:root.dark {
   --text-color-primary: #dedede;
   --background-color-primary: #343332;
   --background-color-secondary: #403f3f;
