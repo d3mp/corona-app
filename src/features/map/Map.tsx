@@ -29,6 +29,7 @@ import {
   selectFilterBy,
   selectMomentTimelineDate,
 } from "../sideBar/sideBarSlice";
+import { ThemeSwitch } from "../themeSwitch/ThemeSwitch";
 import styles from "./Map.module.css";
 import { selectViewPort } from "./mapSlice";
 import {
@@ -143,6 +144,7 @@ function Map() {
         </Source>
         <Tooltip date={currentMoment} hoveredCountry={hoveredCountry} />
       </MapGL>
+      <ThemeSwitch />
     </div>
   );
 }
