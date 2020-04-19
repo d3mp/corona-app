@@ -19,6 +19,7 @@ import MapGL, {
 import { useSelector } from "react-redux";
 import { SHORT_DATE_FORMAT } from "../../common/constants/global";
 import { Theme, ThemeContext } from "../../common/theme/ThemeContext";
+import { ThemeSwitch } from "../../components/themeSwitch/ThemeSwitch";
 import { Nullable } from "../../genericTypes";
 import {
   selectCountriesByName,
@@ -29,7 +30,6 @@ import {
   selectFilterBy,
   selectMomentTimelineDate,
 } from "../sideBar/sideBarSlice";
-import { ThemeSwitch } from "../themeSwitch/ThemeSwitch";
 import styles from "./Map.module.css";
 import { selectViewPort } from "./mapSlice";
 import {
