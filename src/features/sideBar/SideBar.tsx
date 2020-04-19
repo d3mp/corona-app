@@ -15,7 +15,7 @@ import {
   setFilterType,
   setTimelineDate,
 } from "./sideBarSlice";
-import TimelinePanel from "./TimelinePanel";
+import TimelinePanel from "./timelinePanel/TimelinePanel";
 
 export function SideBar() {
   const dispatch = useDispatch();
