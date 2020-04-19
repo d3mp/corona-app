@@ -6,7 +6,6 @@ import { selectSumDataByTimelineDate } from "../countries/countriesSlice";
 import { Status } from "../countries/countriesTypes";
 import { CountriesTable } from "../countriesTable/CountriesTable";
 import { COLORS_BY_FILTER_TYPE } from "../map/mapUtils";
-import { HeaderOption } from "./HeaderOption";
 import styles from "./SideBar.module.css";
 import {
   selectFilterBy,
@@ -15,6 +14,7 @@ import {
   setFilterType,
   setTimelineDate,
 } from "./sideBarSlice";
+import { SideBarTotalCount } from "./SideBarTotalCount";
 import TimelinePanel from "./timelinePanel/TimelinePanel";
 
 export function SideBar() {
@@ -25,40 +25,28 @@ export function SideBar() {
   const isTableVisibleOnMobile: boolean = useSelector(
     selectIsTableVisibleOnMobile
   );
+  const totals = [
+    { label: "Confirmed", status: Status.Confirmed },
+    { label: "Recovered", status: Status.Recovered },
+    { label: "Deaths", status: Status.Deaths },
+    { label: "Active", status: Status.Active },
+  ];
 
   return (
     <div
       className={clsx(styles.sideBar, isTableVisibleOnMobile && styles.open)}
     >
       <div className={styles.header}>
-        <HeaderOption
-          label="Confirmed"
-          quantity={sumData.confirmed}
-          activeColor={COLORS_BY_FILTER_TYPE[filterBy]}
-          isActive={filterBy === Status.Confirmed}
-          onClick={() => dispatch(setFilterType(Status.Confirmed))}
-        />
-        <HeaderOption
-          label="Recovered"
-          quantity={sumData.recovered}
-          activeColor={COLORS_BY_FILTER_TYPE[filterBy]}
-          isActive={filterBy === Status.Recovered}
-          onClick={() => dispatch(setFilterType(Status.Recovered))}
-        />
-        <HeaderOption
-          label="Deaths"
-          quantity={sumData.deaths}
-          activeColor={COLORS_BY_FILTER_TYPE[filterBy]}
-          isActive={filterBy === Status.Deaths}
-          onClick={() => dispatch(setFilterType(Status.Deaths))}
-        />
-        <HeaderOption
-          label="Active"
-          quantity={sumData.active}
-          activeColor={COLORS_BY_FILTER_TYPE[filterBy]}
-          isActive={filterBy === Status.Active}
-          onClick={() => dispatch(setFilterType(Status.Active))}
-        />
+        {totals.map(({ label, status }) => (
+          <SideBarTotalCount
+            key={status}
+            label={label}
+            quantity={sumData[status]}
+            activeColor={COLORS_BY_FILTER_TYPE[filterBy]}
+            isActive={filterBy === status}
+            onClick={() => dispatch(setFilterType(status))}
+          />
+        ))}
       </div>
       <TimelinePanel
         date={moment(date)}

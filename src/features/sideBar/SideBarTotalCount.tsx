@@ -2,7 +2,7 @@ import clsx from "clsx";
 import React from "react";
 import styles from "./SideBar.module.css";
 
-interface HeaderOption {
+interface SideBarTotalCount {
   label: string;
   quantity: number;
   activeColor: string;
@@ -10,21 +10,21 @@ interface HeaderOption {
   onClick: () => void;
 }
 
-export function HeaderOption({
+export function SideBarTotalCount({
   label,
   quantity,
   activeColor,
   isActive,
   onClick,
-}: HeaderOption) {
+}: SideBarTotalCount) {
   return (
     <div
-      className={clsx(styles.headerStat, isActive && styles.headerStatActive)}
+      className={clsx(styles.totalCount, isActive && styles.totalCountActive)}
       style={isActive ? { color: activeColor } : {}}
       onClick={onClick}
     >
-      <div className={styles.headerStatLabel}>{label}</div>
-      <div className={styles.headerStatTotalQuantity}>
+      <div className={styles.totalCountLabel}>{label}</div>
+      <div className={styles.totalCountTotalQuantity}>
         {quantity.toLocaleString()}
       </div>
     </div>
