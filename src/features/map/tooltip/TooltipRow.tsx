@@ -2,14 +2,14 @@ import React from "react";
 import { Status } from "../../countries/countriesTypes";
 import { COLORS_BY_FILTER_TYPE } from "../mapUtils";
 
-interface RowProps {
+interface TooltipRowProps {
   label: string;
   value: number;
   perDay: number;
   status: Status;
 }
 
-function Row({ label, value, perDay, status }: RowProps) {
+function TooltipRow({ label, value, perDay, status }: TooltipRowProps) {
   return (
     <div>
       <span>{label}:</span>
@@ -27,4 +27,4 @@ function Row({ label, value, perDay, status }: RowProps) {
   );
 }
 
-export { Row };
+export { TooltipRow };
