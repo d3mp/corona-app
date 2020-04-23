@@ -2,6 +2,7 @@ import clsx from "clsx";
 import moment, { Moment } from "moment";
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
+import TimelinePanel from "../../components/timelinePanel/TimelinePanel";
 import { selectSumDataByTimelineDate } from "../countries/countriesSlice";
 import { Status } from "../countries/countriesTypes";
 import { CountriesTable } from "../countriesTable/CountriesTable";
@@ -15,7 +16,6 @@ import {
   setTimelineDate,
 } from "./sideBarSlice";
 import { SideBarTotalCount } from "./SideBarTotalCount";
-import TimelinePanel from "./timelinePanel/TimelinePanel";
 
 export function SideBar() {
   const dispatch = useDispatch();

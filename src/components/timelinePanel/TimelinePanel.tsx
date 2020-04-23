@@ -24,9 +24,10 @@ function TimelinePanel({
   );
 
   return (
-    <div className="timeline-panel">
-      <label>{date.format("LL")}</label>
+    <div className="timeline-panel" data-testid="timeline-panel">
+      <label htmlFor="timeline">{date.format("LL")}</label>
       <input
+        id="timeline"
         className="range"
         type="range"
         value={date.dayOfYear()}
