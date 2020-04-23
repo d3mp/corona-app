@@ -1,4 +1,3 @@
-import { Nullable } from "../../genericTypes";
 import { Country } from "../countries/countriesTypes";
 
 export interface Viewport {
@@ -8,7 +7,7 @@ export interface Viewport {
 }
 
 export interface HoveredCountry {
-  country: Nullable<Country>;
+  country: Country;
   offsetX: number;
   offsetY: number;
 }

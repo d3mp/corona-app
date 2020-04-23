@@ -20,6 +20,7 @@ import { useSelector } from "react-redux";
 import { SHORT_DATE_FORMAT } from "../../common/constants/global";
 import { Theme, ThemeContext } from "../../common/theme/ThemeContext";
 import { ThemeSwitch } from "../../components/themeSwitch/ThemeSwitch";
+import { Tooltip } from "../../components/tooltip/Tooltip";
 import { Nullable } from "../../genericTypes";
 import {
   selectCountriesByName,
@@ -37,7 +38,6 @@ import {
   getInOurPais,
   getTimelineExpression,
 } from "./mapUtils";
-import { Tooltip } from "./tooltip/Tooltip";
 
 function Map() {
   const mapRef = useRef<InteractiveMap>(null);
@@ -46,15 +46,13 @@ function Map() {
   const [viewport, setViewport] = useState<Partial<InteractiveMapProps>>(
     initialViewport
   );
-  const [hoveredCountry, setHoveredCountry] = useState<{
-    country: Nullable<Country>;
-    offsetX: number;
-    offsetY: number;
-  }>({
-    country: null,
-    offsetX: 0,
-    offsetY: 0,
-  });
+  const [hoveredCountry, setHoveredCountry] = useState<
+    Nullable<{
+      country: Country;
+      offsetX: number;
+      offsetY: number;
+    }>
+  >(null);
   const countriesByName: CountriesByName = useSelector(selectCountriesByName);
   const featureCollection = useSelector(selectlCountriesByTimelineFC);
   const filterBy: Status = useSelector(selectFilterBy);
@@ -69,7 +67,7 @@ function Map() {
       );
 
       if (feature && feature.properties && feature.properties.country) {
-        if (hoveredCountry.country !== feature.properties.country) {
+        if (hoveredCountry?.country !== feature.properties.country) {
           return setHoveredCountry({
             offsetX,
             offsetY,
@@ -77,12 +75,8 @@ function Map() {
           });
         }
       } else {
-        if (hoveredCountry.country) {
-          return setHoveredCountry({
-            offsetX: 0,
-            offsetY: 0,
-            country: null,
-          });
+        if (hoveredCountry?.country) {
+          return setHoveredCountry(null);
         }
       }
     },

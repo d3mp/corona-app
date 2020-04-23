@@ -1,18 +1,19 @@
 import { Moment } from "moment";
 import React from "react";
-import { SHORT_DATE_FORMAT } from "../../../common/constants/global";
-import { Status } from "../../countries/countriesTypes";
-import { HoveredCountry } from "../mapTypes";
+import { SHORT_DATE_FORMAT } from "../../common/constants/global";
+import { Status } from "../../features/countries/countriesTypes";
+import { HoveredCountry } from "../../features/map/mapTypes";
+import { Nullable } from "../../genericTypes";
 import styles from "./Tooltip.module.css";
 import { TooltipRow } from "./TooltipRow";
 
 interface TooltipProps {
   date: Moment;
-  hoveredCountry: HoveredCountry;
+  hoveredCountry?: Nullable<HoveredCountry>;
 }
 
 function Tooltip({ date, hoveredCountry }: TooltipProps) {
-  if (hoveredCountry.country) {
+  if (hoveredCountry) {
     const currentDate: string = date.format(SHORT_DATE_FORMAT);
     const prevDate: string = date
       .clone()
@@ -21,8 +22,8 @@ function Tooltip({ date, hoveredCountry }: TooltipProps) {
     const timeline = hoveredCountry.country.timeline;
     const tooltipRows = [
       { label: "Confirmed", status: Status.Confirmed },
-      { label: "Deaths", status: Status.Deaths },
       { label: "Recovered", status: Status.Recovered },
+      { label: "Deaths", status: Status.Deaths },
       { label: "Active", status: Status.Active },
     ];
 
@@ -34,7 +35,7 @@ function Tooltip({ date, hoveredCountry }: TooltipProps) {
           left: hoveredCountry.offsetX,
         }}
       >
-        <b>{hoveredCountry.country.country}</b>
+        <b data-testid="tooltip-country">{hoveredCountry.country.country}</b>
         {tooltipRows.map(({ label, status }) => (
           <TooltipRow
             key={status}
