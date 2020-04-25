@@ -11,7 +11,7 @@ interface TooltipRowProps {
 
 function TooltipRow({ label, value, perDay, status }: TooltipRowProps) {
   return (
-    <>
+    <div>
       <span data-testid="tooltip-label">{label}:</span>
       <span
         data-testid="tooltip-value"
@@ -24,7 +24,7 @@ function TooltipRow({ label, value, perDay, status }: TooltipRowProps) {
           })`}
         </sup>
       </span>
-    </>
+    </div>
   );
 }
 
