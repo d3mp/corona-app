@@ -23,8 +23,13 @@ export function SideBarTotalCount({
       style={isActive ? { color: activeColor } : {}}
       onClick={onClick}
     >
-      <div className={styles.totalCountLabel}>{label}</div>
-      <div className={styles.totalCountTotalQuantity}>
+      <div className={styles.totalCountLabel} data-testid="total-count-label">
+        {label}
+      </div>
+      <div
+        className={styles.totalCountTotalQuantity}
+        data-testid="total-count-value"
+      >
         {quantity.toLocaleString()}
       </div>
     </div>
