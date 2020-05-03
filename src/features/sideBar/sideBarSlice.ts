@@ -6,6 +6,7 @@ import { Status } from "../countries/countriesTypes";
 
 interface SideBarState {
   filterBy: Status;
+  searchValue: string;
   sortBy: string;
   sortDirection: SortDirectionType;
   timelineDate: string; // ISO format
@@ -14,6 +15,7 @@ interface SideBarState {
 
 const initialState: SideBarState = {
   filterBy: Status.Confirmed,
+  searchValue: "",
   sortBy: Status.Confirmed,
   sortDirection: SortDirection.DESC,
   timelineDate: moment().format(),
@@ -29,6 +31,9 @@ export const sideBarSlice = createSlice({
     },
     setTimelineDate: (state, action: PayloadAction<string>) => {
       state.timelineDate = action.payload;
+    },
+    setSearchValue: (state, action: PayloadAction<string>) => {
+      state.searchValue = action.payload;
     },
     sort: (
       state,
@@ -48,6 +53,8 @@ export const sideBarSlice = createSlice({
 
 // Selectors
 
+export const selectSearchValue = (state: RootState) =>
+  state.sideBar.searchValue;
 export const selectSortBy = (state: RootState) => state.sideBar.sortBy;
 export const selectSortDirection = (state: RootState) =>
   state.sideBar.sortDirection;
@@ -65,6 +72,7 @@ export const selectMomentTimelineDate = createSelector(
 export const {
   setFilterType,
   setTimelineDate,
+  setSearchValue,
   sort,
   toggleTableVisibility,
 } = sideBarSlice.actions;

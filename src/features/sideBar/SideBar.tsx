@@ -2,6 +2,7 @@ import clsx from "clsx";
 import moment, { Moment } from "moment";
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { SearchBar } from "../../components/searchBar/SearchBar";
 import TimelinePanel from "../../components/timelinePanel/TimelinePanel";
 import { selectSumDataByTimelineDate } from "../countries/countriesSlice";
 import { Status } from "../countries/countriesTypes";
@@ -13,6 +14,7 @@ import {
   selectIsTableVisibleOnMobile,
   selectMomentTimelineDate,
   setFilterType,
+  setSearchValue,
   setTimelineDate,
 } from "./sideBarSlice";
 import { SideBarTotalCount } from "./SideBarTotalCount";
@@ -53,6 +55,11 @@ export function SideBar() {
         onChange={(date) => dispatch(setTimelineDate(date.format()))}
         minDate={moment("2020-01-22T00:00:00")}
         maxDate={moment()}
+      />
+      <SearchBar
+        onChange={(searchValue: string) =>
+          dispatch(setSearchValue(searchValue))
+        }
       />
       <CountriesTable />
     </div>

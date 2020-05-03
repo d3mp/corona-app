@@ -1,7 +1,9 @@
 :root.dark {
   --text-color-primary: #dedede;
+  --text-color-light: #343332;
   --background-color-primary: #343332;
   --background-color-secondary: #403f3f;
+  --background-color-light: var(--text-color-primary);
 
   --border-color-primary: #2b2a2a;
 }

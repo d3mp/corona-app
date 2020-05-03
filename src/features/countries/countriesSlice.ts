@@ -14,6 +14,7 @@ import { SHORT_DATE_FORMAT } from "../../common/constants/global";
 import { Nullable } from "../../genericTypes";
 import {
   selectMomentTimelineDate,
+  selectSearchValue,
   selectSortBy,
   selectSortDirection,
 } from "../sideBar/sideBarSlice";
@@ -98,9 +99,18 @@ export const selectCountriesByTimelineDate = createSelector(
   }
 );
 
+export const selectSearchedCountriesByTimelineDate = createSelector(
+  [selectCountriesByTimelineDate, selectSearchValue],
+  (countries: Country[], searchValue: string) => {
+    return countries.filter((country: Country) =>
+      country.country.match(new RegExp(searchValue, "i"))
+    );
+  }
+);
+
 export const selectSortedCountriesByTimelineDate = createSelector(
   [
-    selectCountriesByTimelineDate,
+    selectSearchedCountriesByTimelineDate,
     selectMomentTimelineDate,
     selectSortBy,
     selectSortDirection,
@@ -129,7 +139,7 @@ export const selectSortedCountriesByTimelineDate = createSelector(
 );
 
 export const selectSumDataByTimelineDate = createSelector(
-  [selectCountriesByTimelineDate, selectMomentTimelineDate],
+  [selectSearchedCountriesByTimelineDate, selectMomentTimelineDate],
   (countries: Country[], timelineDate: Moment) => {
     const defaultValues: TotalByCountry = {
       active: 0,
@@ -151,7 +161,7 @@ export const selectSumDataByTimelineDate = createSelector(
 );
 
 export const selectlCountriesByTimelineFC = createSelector(
-  [selectCountriesByTimelineDate],
+  [selectSearchedCountriesByTimelineDate],
   (countries: Country[]) => {
     const featuerCollection: GeoJSON.FeatureCollection<
       GeoJSON.Point,

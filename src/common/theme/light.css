@@ -1,7 +1,9 @@
 :root.light {
   --text-color-primary: #6b6b6b;
+  --text-color-light: #6b6b6b;
   --background-color-primary: #f0f0ef;
   --background-color-secondary: #cbd2d3;
+  --background-color-light: #fff;
 
   --border-color-primary: #b2b8b9;
 }
