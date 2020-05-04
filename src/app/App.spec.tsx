@@ -1,4 +1,4 @@
-import { render, wait } from "@testing-library/react";
+import { render, waitFor } from "@testing-library/react";
 import React from "react";
 import { Provider } from "react-redux";
 import { COUNTRIES_URL, HISTORICAL_URL } from "../api/corona";
@@ -19,7 +19,7 @@ describe("App", () => {
       </Provider>
     );
 
-    await wait(() => {
+    await waitFor(() => {
       expect(fetch).toHaveBeenNthCalledWith(1, COUNTRIES_URL);
       expect(fetch).toHaveBeenNthCalledWith(2, HISTORICAL_URL);
     });
@@ -27,6 +27,7 @@ describe("App", () => {
     expect(store.getState().countries).toEqual({
       countriesByName,
       error: null,
+      favoriteCountries: {},
       loading: "idle",
     });
   });

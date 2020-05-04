@@ -11,13 +11,15 @@ import { SortDirection, SortDirectionType } from "react-virtualized";
 import * as CoronaAPI from "../../api/corona";
 import { RootState } from "../../app/store";
 import { SHORT_DATE_FORMAT } from "../../common/constants/global";
-import { Nullable } from "../../genericTypes";
+import { HashMap, Nullable } from "../../genericTypes";
 import {
+  selectFilterBy,
   selectMomentTimelineDate,
   selectSearchValue,
   selectSortBy,
   selectSortDirection,
 } from "../sideBar/sideBarSlice";
+import { FilterBy } from "../sideBar/sideBarTypes";
 import {
   CountriesByName,
   Country,
@@ -37,19 +39,35 @@ export const fetchCountries = createAsyncThunk(
 interface CountriesState {
   loading: "idle" | "pending" | "succeeded" | "failed";
   countriesByName: CountriesByName;
+  favoriteCountries: HashMap<boolean>;
   error: Nullable<SerializedError>;
 }
 
 const initialState: CountriesState = {
   loading: "idle",
   countriesByName: {},
+  favoriteCountries: {},
   error: null,
 };
 
 export const countriesSlice = createSlice({
   name: "countries",
   initialState,
-  reducers: {},
+  reducers: {
+    toggleFavorite: (state, action: PayloadAction<string>) => {
+      if (state.favoriteCountries[action.payload]) {
+        delete state.favoriteCountries[action.payload];
+      } else {
+        state.favoriteCountries[action.payload] = true;
+      }
+    },
+    updateFavoriteCountries: (
+      state,
+      action: PayloadAction<HashMap<boolean>>
+    ) => {
+      state.favoriteCountries = action.payload;
+    },
+  },
   extraReducers: (builder) => {
     builder
       .addCase(fetchCountries.pending, (state) => {
@@ -78,17 +96,42 @@ export const countriesSlice = createSlice({
 export const selectCountriesByName = (state: RootState) =>
   state.countries.countriesByName;
 
+export const selectFavoriteCountries = (state: RootState) =>
+  state.countries.favoriteCountries;
+
 export const selectCountries = createSelector(
   [selectCountriesByName],
   (countriesByName: CountriesByName) => Object.values(countriesByName)
 );
 
-export const selectCountriesByTimelineDate = createSelector(
-  [selectCountries, selectMomentTimelineDate],
-  (countries: Country[], timelineDate: Moment) => {
+export const selectFilteredCountries = createSelector(
+  [
+    selectCountries,
+    selectMomentTimelineDate,
+    selectSearchValue,
+    selectFilterBy,
+    selectFavoriteCountries,
+  ],
+  (
+    countries: Country[],
+    timelineDate: Moment,
+    searchValue: string,
+    filterBy: FilterBy,
+    favoriteCountries: HashMap<boolean>
+  ) => {
     const date: string = timelineDate.format(SHORT_DATE_FORMAT);
 
     return countries.filter((country: Country) => {
+      // Filter by search
+      if (searchValue && !country.country.match(new RegExp(searchValue, "i"))) {
+        return false;
+      }
+
+      // Filter by favorite
+      if (filterBy.favorite && !favoriteCountries[country.country]) {
+        return false;
+      }
+
       return (
         country.timeline.active[date] ||
         country.timeline.confirmed[date] ||
@@ -99,18 +142,9 @@ export const selectCountriesByTimelineDate = createSelector(
   }
 );
 
-export const selectSearchedCountriesByTimelineDate = createSelector(
-  [selectCountriesByTimelineDate, selectSearchValue],
-  (countries: Country[], searchValue: string) => {
-    return countries.filter((country: Country) =>
-      country.country.match(new RegExp(searchValue, "i"))
-    );
-  }
-);
-
-export const selectSortedCountriesByTimelineDate = createSelector(
+export const selectFilteredAndOrderedCountries = createSelector(
   [
-    selectSearchedCountriesByTimelineDate,
+    selectFilteredCountries,
     selectMomentTimelineDate,
     selectSortBy,
     selectSortDirection,
@@ -138,8 +172,8 @@ export const selectSortedCountriesByTimelineDate = createSelector(
   }
 );
 
-export const selectSumDataByTimelineDate = createSelector(
-  [selectSearchedCountriesByTimelineDate, selectMomentTimelineDate],
+export const selectFilteredSumData = createSelector(
+  [selectFilteredCountries, selectMomentTimelineDate],
   (countries: Country[], timelineDate: Moment) => {
     const defaultValues: TotalByCountry = {
       active: 0,
@@ -160,8 +194,8 @@ export const selectSumDataByTimelineDate = createSelector(
   }
 );
 
-export const selectlCountriesByTimelineFC = createSelector(
-  [selectSearchedCountriesByTimelineDate],
+export const selectlFilteredCountriesFC = createSelector(
+  [selectFilteredCountries],
   (countries: Country[]) => {
     const featuerCollection: GeoJSON.FeatureCollection<
       GeoJSON.Point,
@@ -189,4 +223,8 @@ export const selectlCountriesByTimelineFC = createSelector(
   }
 );
 
+export const {
+  toggleFavorite,
+  updateFavoriteCountries,
+} = countriesSlice.actions;
 export default countriesSlice.reducer;

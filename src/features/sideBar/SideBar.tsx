@@ -4,7 +4,7 @@ import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { SearchBar } from "../../components/searchBar/SearchBar";
 import TimelinePanel from "../../components/timelinePanel/TimelinePanel";
-import { selectSumDataByTimelineDate } from "../countries/countriesSlice";
+import { selectFilteredSumData } from "../countries/countriesSlice";
 import { Status } from "../countries/countriesTypes";
 import { CountriesTable } from "../countriesTable/CountriesTable";
 import { COLORS_BY_FILTER_TYPE } from "../map/mapUtils";
@@ -13,17 +13,18 @@ import {
   selectFilterBy,
   selectIsTableVisibleOnMobile,
   selectMomentTimelineDate,
-  setFilterType,
+  setFilterBy,
   setSearchValue,
   setTimelineDate,
 } from "./sideBarSlice";
 import { SideBarTotalCount } from "./SideBarTotalCount";
+import { FilterBy } from "./sideBarTypes";
 
 export function SideBar() {
   const dispatch = useDispatch();
   const date: Moment = useSelector(selectMomentTimelineDate);
-  const filterBy: Status = useSelector(selectFilterBy);
-  const sumData = useSelector(selectSumDataByTimelineDate);
+  const filterBy: FilterBy = useSelector(selectFilterBy);
+  const sumData = useSelector(selectFilteredSumData);
   const isTableVisibleOnMobile: boolean = useSelector(
     selectIsTableVisibleOnMobile
   );
@@ -44,9 +45,11 @@ export function SideBar() {
             key={status}
             label={label}
             quantity={sumData[status]}
-            activeColor={COLORS_BY_FILTER_TYPE[filterBy]}
-            isActive={filterBy === status}
-            onClick={() => dispatch(setFilterType(status))}
+            activeColor={COLORS_BY_FILTER_TYPE[filterBy.status]}
+            isActive={filterBy.status === status}
+            onClick={() =>
+              dispatch(setFilterBy({ status, favorite: filterBy.favorite }))
+            }
           />
         ))}
       </div>

@@ -1,25 +1,45 @@
+import { Star, StarBorder } from "@material-ui/icons";
 import clsx from "clsx";
-import React from "react";
+import _ from "lodash";
+import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { AutoSizer, Column, SortDirectionType, Table } from "react-virtualized";
+import "react-virtualized/styles.css";
 import { SHORT_DATE_FORMAT } from "../../common/constants/global";
-import { selectSortedCountriesByTimelineDate } from "../countries/countriesSlice";
+import usePrevious from "../../common/hooks/usePrevious";
+import { HashMap, Nullable } from "../../genericTypes";
+import {
+  selectFavoriteCountries,
+  selectFilteredAndOrderedCountries,
+  toggleFavorite,
+  updateFavoriteCountries,
+} from "../countries/countriesSlice";
 import { Country, Status } from "../countries/countriesTypes";
 import { setViewport } from "../map/mapSlice";
 import {
+  selectFilterBy,
   selectIsTableVisibleOnMobile,
   selectMomentTimelineDate,
   selectSortBy,
   selectSortDirection,
+  setFilterBy,
   sort,
   toggleTableVisibility,
 } from "../sideBar/sideBarSlice";
-import styles from "./CountriesTable.module.css";
+import { FilterBy } from "../sideBar/sideBarTypes";
+import styles from "./CountriesTable.module.scss";
 import { headerRenderer } from "./CountriesTableHeader";
+
+const FAVORITE_COUNTRIES = "favoriteCountries";
 
 export function CountriesTable() {
   const dispatch = useDispatch();
-  const countries: Country[] = useSelector(selectSortedCountriesByTimelineDate);
+  const countries: Country[] = useSelector(selectFilteredAndOrderedCountries);
+  const filterBy: FilterBy = useSelector(selectFilterBy);
+  const favCountries: HashMap<boolean> = useSelector(selectFavoriteCountries);
+  const prevFavCountries: HashMap<boolean> = usePrevious<HashMap<boolean>>(
+    favCountries
+  );
   const date: string = useSelector(selectMomentTimelineDate).format(
     SHORT_DATE_FORMAT
   );
@@ -29,19 +49,51 @@ export function CountriesTable() {
     selectIsTableVisibleOnMobile
   );
 
+  useEffect(() => {
+    try {
+      const favoriteCountriesJson: Nullable<string> = localStorage.getItem(
+        FAVORITE_COUNTRIES
+      );
+
+      if (favoriteCountriesJson) {
+        const favoriteCountries = JSON.parse(favoriteCountriesJson) as HashMap<
+          boolean
+        >;
+        dispatch(updateFavoriteCountries(favoriteCountries));
+      }
+    } catch (ex) {
+      // TODO: show some error message
+      console.warn(ex);
+    }
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (prevFavCountries && !_.isEqual(favCountries, prevFavCountries)) {
+      try {
+        localStorage.setItem(FAVORITE_COUNTRIES, JSON.stringify(favCountries));
+      } catch (ex) {
+        // TODO: show some error message
+        console.warn(ex);
+      }
+    }
+  }, [favCountries, prevFavCountries]);
+
   return (
     <div style={{ height: "100%" }}>
       <div
         className={clsx(
-          styles.tableContainer,
-          !isTableVisibleOnMobile && styles.hiddenForMobile
+          styles.container,
+          !isTableVisibleOnMobile && styles.hiddenContainer
         )}
       >
         <AutoSizer>
           {({ width, height }) => {
-            const indexWidth: number = 50;
-            const colWidth = ((width - indexWidth) / 100) * 17.5;
-            const countryWidth = ((width - indexWidth) / 100) * 30;
+            const indexWidth: number = 30;
+            const favWidth: number = 50;
+            const widthWithoutIndexAndFav =
+              (width - (indexWidth + favWidth)) / 100;
+            const colWidth = widthWithoutIndexAndFav * 20;
+            const countryWidth = widthWithoutIndexAndFav * 20;
 
             return (
               <Table
@@ -80,50 +132,70 @@ export function CountriesTable() {
                 />
                 <Column
                   width={countryWidth}
+                  className={styles.countryCol}
                   label="Country"
                   dataKey="country"
                   defaultSortDirection="ASC"
                   headerRenderer={headerRenderer}
                 />
+                {[
+                  { label: "Confirmed", status: Status.Confirmed },
+                  { label: "Recovered", status: Status.Recovered },
+                  { label: "Deaths", status: Status.Deaths },
+                  { label: "Active", status: Status.Active },
+                ].map((column) => (
+                  <Column
+                    key={column.status}
+                    label={column.label}
+                    dataKey={column.status}
+                    defaultSortDirection="DESC"
+                    width={colWidth}
+                    headerRenderer={headerRenderer}
+                    cellDataGetter={({ dataKey, rowData }) =>
+                      rowData.timeline[dataKey][date]?.toLocaleString() || 0
+                    }
+                  />
+                ))}
                 <Column
-                  label="Confirmed"
-                  dataKey={Status.Confirmed}
-                  defaultSortDirection="DESC"
-                  width={colWidth}
-                  headerRenderer={headerRenderer}
-                  cellDataGetter={({ dataKey, rowData }) =>
-                    rowData.timeline[dataKey][date]?.toLocaleString() || 0
-                  }
-                />
-                <Column
-                  label="Recovered"
-                  dataKey={Status.Recovered}
-                  defaultSortDirection="DESC"
-                  width={colWidth}
-                  headerRenderer={headerRenderer}
-                  cellDataGetter={({ dataKey, rowData }) =>
-                    rowData.timeline[dataKey][date]?.toLocaleString() || 0
-                  }
-                />
-                <Column
-                  label="Deaths"
-                  dataKey={Status.Deaths}
-                  defaultSortDirection="DESC"
-                  width={colWidth}
-                  headerRenderer={headerRenderer}
-                  cellDataGetter={({ dataKey, rowData }) =>
-                    rowData.timeline[dataKey][date]?.toLocaleString() || 0
-                  }
-                />
-                <Column
-                  label="Active"
-                  dataKey={Status.Active}
-                  defaultSortDirection="DESC"
-                  width={colWidth}
-                  headerRenderer={headerRenderer}
-                  cellDataGetter={({ dataKey, rowData }) =>
-                    rowData.timeline[dataKey][date]?.toLocaleString() || 0
-                  }
+                  label=""
+                  dataKey="favorite"
+                  disableSort
+                  width={favWidth}
+                  headerRenderer={() => {
+                    const StarIcon = filterBy.favorite ? Star : StarBorder;
+
+                    return (
+                      <StarIcon
+                        className={styles.favoriteIcon}
+                        data-testid="filter-by-favorite"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          dispatch(
+                            setFilterBy({
+                              ...filterBy,
+                              favorite: !filterBy.favorite,
+                            })
+                          );
+                        }}
+                      />
+                    );
+                  }}
+                  cellRenderer={({ rowData }) => {
+                    const StarIcon = favCountries[rowData.country]
+                      ? Star
+                      : StarBorder;
+
+                    return (
+                      <StarIcon
+                        className={styles.favoriteIcon}
+                        data-testid="toggle-favorite"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          dispatch(toggleFavorite(rowData.country));
+                        }}
+                      />
+                    );
+                  }}
                 />
               </Table>
             );

@@ -1,6 +1,6 @@
 import React from "react";
 import { SortIndicator, TableHeaderProps } from "react-virtualized";
-import styles from "./CountriesTable.module.css";
+import styles from "./CountriesTable.module.scss";
 
 export function headerRenderer({
   dataKey,

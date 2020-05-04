@@ -1,4 +1,4 @@
-.tableContainer {
+/* .tableContainer {
   height: 100%;
 }
 
@@ -62,3 +62,10 @@
   background-color: var(--background-color-secondary);
   opacity: 0.8;
 }
+
+.favorite {
+  width: 1.5rem;
+  height: 1.5rem;
+  fill: var(--text-color-primary);
+  padding: 0.25rem;
+} */

@@ -1,14 +1,24 @@
 .searchBar {
   display: flex;
+  position: relative;
+  align-items: center;
 
   input {
     flex: 1;
     padding: 0.5rem;
     font-size: 0.875rem;
+    color: var(--text-color-light);
     background-color: var(--background-color-light);
     border: 2px solid var(--border-color-primary);
-    border-left-width: 0;
-    border-right-width: 0;
+    border-left: none;
+    border-right: none;
+  }
+
+  .searchIcon {
+    position: absolute;
+    padding: 0.5rem;
+    right: 0;
     color: var(--text-color-light);
+    pointer-events: none;
   }
 }

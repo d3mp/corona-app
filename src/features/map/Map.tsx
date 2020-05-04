@@ -24,13 +24,14 @@ import { Tooltip } from "../../components/tooltip/Tooltip";
 import { Nullable } from "../../genericTypes";
 import {
   selectCountriesByName,
-  selectlCountriesByTimelineFC,
+  selectlFilteredCountriesFC,
 } from "../countries/countriesSlice";
-import { CountriesByName, Country, Status } from "../countries/countriesTypes";
+import { CountriesByName, Country } from "../countries/countriesTypes";
 import {
   selectFilterBy,
   selectMomentTimelineDate,
 } from "../sideBar/sideBarSlice";
+import { FilterBy } from "../sideBar/sideBarTypes";
 import styles from "./Map.module.css";
 import { selectViewPort } from "./mapSlice";
 import {
@@ -54,12 +55,20 @@ function Map() {
     }>
   >(null);
   const countriesByName: CountriesByName = useSelector(selectCountriesByName);
-  const featureCollection = useSelector(selectlCountriesByTimelineFC);
-  const filterBy: Status = useSelector(selectFilterBy);
+  const featureCollection = useSelector(selectlFilteredCountriesFC);
+  const filterBy: FilterBy = useSelector(selectFilterBy);
   const currentMoment: Moment = useSelector(selectMomentTimelineDate);
   const date: string = currentMoment.format(SHORT_DATE_FORMAT);
-  const hasCasesExpression = getTimelineExpression("has", date, filterBy);
-  const getCasesExpression = getTimelineExpression("get", date, filterBy);
+  const hasCasesExpression = getTimelineExpression(
+    "has",
+    date,
+    filterBy.status
+  );
+  const getCasesExpression = getTimelineExpression(
+    "get",
+    date,
+    filterBy.status
+  );
   const onHover = useCallback(
     ({ features = [], srcEvent: { offsetX, offsetY } }) => {
       const feature: Feature = features.find((f: any) =>
@@ -116,10 +125,10 @@ function Map() {
                 getCasesExpression,
                 ...getInOurPais(),
               ],
-              "circle-color": COLORS_BY_FILTER_TYPE[filterBy],
+              "circle-color": COLORS_BY_FILTER_TYPE[filterBy.status],
               "circle-opacity": 0.4,
               "circle-stroke-width": 1,
-              "circle-stroke-color": COLORS_BY_FILTER_TYPE[filterBy],
+              "circle-stroke-color": COLORS_BY_FILTER_TYPE[filterBy.status],
             }}
           />
           <Layer

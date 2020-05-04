@@ -30,7 +30,7 @@ describe("SideBar", () => {
     });
   });
 
-  it("should display total counts and allow to filter by them", () => {
+  it("should display totals filtered by statuses", () => {
     const { getAllByTestId } = render(
       <Provider store={store}>
         <SideBar />
@@ -63,19 +63,19 @@ describe("SideBar", () => {
     expect(activeValue).toHaveTextContent("778,707");
 
     // Check that Confirmed filter selected by default
-    expect(store.getState().sideBar.filterBy).toEqual(Status.Confirmed);
+    expect(store.getState().sideBar.filterBy.status).toEqual(Status.Confirmed);
     // Check that filtering by Recovered works
     fireEvent.click(recoveredLabel);
-    expect(store.getState().sideBar.filterBy).toEqual(Status.Recovered);
+    expect(store.getState().sideBar.filterBy.status).toEqual(Status.Recovered);
     // Check that filtering by Deaths works
     fireEvent.click(deathsLabel);
-    expect(store.getState().sideBar.filterBy).toEqual(Status.Deaths);
+    expect(store.getState().sideBar.filterBy.status).toEqual(Status.Deaths);
     // Check that filtering by Active works
     fireEvent.click(activeLabel);
-    expect(store.getState().sideBar.filterBy).toEqual(Status.Active);
+    expect(store.getState().sideBar.filterBy.status).toEqual(Status.Active);
   });
 
-  it("should handle timeline changes", () => {
+  it("should display totals based on timeline", () => {
     const { getAllByTestId, getByLabelText } = render(
       <Provider store={store}>
         <SideBar />
@@ -96,8 +96,9 @@ describe("SideBar", () => {
       activeValue,
     ] = getAllByTestId("total-count-value");
     // Check that default date is correct
-    expect(getByLabelText(date.format("LL"))).toBeInTheDocument();
-    fireEvent.change(getByLabelText(date.format("LL")), {
+    const timelineInput = getByLabelText(date.format("LL"));
+    expect(timelineInput).toBeInTheDocument();
+    fireEvent.change(timelineInput, {
       target: { value: prevDay.dayOfYear() },
     });
     expect(getByLabelText(prevDay.format("LL"))).toBeInTheDocument();
@@ -113,5 +114,48 @@ describe("SideBar", () => {
 
     expect(activeLabel).toHaveTextContent("Active");
     expect(activeValue).toHaveTextContent("756,948");
+  });
+
+  it("should display totals based on search filter", () => {
+    const { getAllByTestId, getByPlaceholderText } = render(
+      <Provider store={store}>
+        <SideBar />
+      </Provider>
+    );
+
+    const [
+      confirmedLabel,
+      recoveredLabel,
+      deathsLabel,
+      activeLabel,
+    ] = getAllByTestId("total-count-label");
+    const [
+      confirmedValue,
+      recoveredValue,
+      deathsValue,
+      activeValue,
+    ] = getAllByTestId("total-count-value");
+    // Check that default date is correct
+    const searchInput = getByPlaceholderText("Search...");
+    expect(searchInput).toBeInTheDocument();
+    expect(searchInput).not.toHaveValue();
+
+    fireEvent.change(searchInput, {
+      target: { value: "USA" },
+    });
+
+    expect(searchInput).toHaveValue("USA");
+
+    expect(confirmedLabel).toHaveTextContent("Confirmed");
+    expect(confirmedValue).toHaveTextContent("784,326");
+
+    expect(recoveredLabel).toHaveTextContent("Recovered");
+    expect(recoveredValue).toHaveTextContent("72,329");
+
+    expect(deathsLabel).toHaveTextContent("Deaths");
+    expect(deathsValue).toHaveTextContent("42,094");
+
+    expect(activeLabel).toHaveTextContent("Active");
+    expect(activeValue).toHaveTextContent("669,903");
   });
 });

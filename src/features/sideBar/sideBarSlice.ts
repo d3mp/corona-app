@@ -3,9 +3,10 @@ import moment from "moment";
 import { SortDirection, SortDirectionType } from "react-virtualized";
 import { RootState } from "../../app/store";
 import { Status } from "../countries/countriesTypes";
+import { FilterBy } from "./sideBarTypes";
 
 interface SideBarState {
-  filterBy: Status;
+  filterBy: FilterBy;
   searchValue: string;
   sortBy: string;
   sortDirection: SortDirectionType;
@@ -14,7 +15,10 @@ interface SideBarState {
 }
 
 const initialState: SideBarState = {
-  filterBy: Status.Confirmed,
+  filterBy: {
+    status: Status.Confirmed,
+    favorite: false,
+  },
   searchValue: "",
   sortBy: Status.Confirmed,
   sortDirection: SortDirection.DESC,
@@ -26,7 +30,7 @@ export const sideBarSlice = createSlice({
   name: "sideBar",
   initialState,
   reducers: {
-    setFilterType: (state, action: PayloadAction<Status>) => {
+    setFilterBy: (state, action: PayloadAction<FilterBy>) => {
       state.filterBy = action.payload;
     },
     setTimelineDate: (state, action: PayloadAction<string>) => {
@@ -70,7 +74,7 @@ export const selectMomentTimelineDate = createSelector(
 );
 
 export const {
-  setFilterType,
+  setFilterBy,
   setTimelineDate,
   setSearchValue,
   sort,
