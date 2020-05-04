@@ -4,7 +4,7 @@ import { SHORT_DATE_FORMAT } from "../../common/constants/global";
 import { Status } from "../../features/countries/countriesTypes";
 import { HoveredCountry } from "../../features/map/mapTypes";
 import { Nullable } from "../../genericTypes";
-import styles from "./Tooltip.module.css";
+import styles from "./Tooltip.module.scss";
 import { TooltipRow } from "./TooltipRow";
 
 interface TooltipProps {

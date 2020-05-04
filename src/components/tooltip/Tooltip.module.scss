@@ -1,0 +1,31 @@
+.tooltip {
+  position: absolute;
+  max-width: 400px;
+  margin: 0.5rem;
+  padding: 0.75rem;
+  color: var(--text-color-primary);
+  background-color: var(--background-color-primary);
+  border: 2px solid var(--border-color-primary);
+  font-size: 0.75rem;
+  pointer-events: none;
+
+  div {
+    display: flex;
+
+    span {
+      flex: 1;
+      padding-top: 0.25rem;
+      white-space: nowrap;
+
+      &:last-child {
+        padding-left: 0.75rem;
+        text-align: right;
+      }
+    }
+
+    sup {
+      padding-left: 0.1em;
+      vertical-align: top;
+    }
+  }
+}
