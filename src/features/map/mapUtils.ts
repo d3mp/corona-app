@@ -20,10 +20,10 @@ export function getInOurPais(max: number = 1000000) {
 
     if (step < 100000) {
       step += 5000;
-    } else if (step < 200000) {
-      step += 10000;
-    } else {
+    } else if (step < 500000) {
       step += 20000;
+    } else {
+      step += 50000;
     }
   }
 
