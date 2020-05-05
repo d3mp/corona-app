@@ -202,12 +202,12 @@ export function CountriesTable() {
           }}
         </AutoSizer>
       </div>
-      <div
+      <button
         className={styles.toggleTable}
         onClick={() => dispatch(toggleTableVisibility())}
       >
         {`${isTableVisibleOnMobile ? "Hide" : "Show"} table`}
-      </div>
+      </button>
     </div>
   );
 }
