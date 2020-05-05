@@ -5,7 +5,7 @@ import { COUNTRIES_URL, HISTORICAL_URL } from "../api/corona";
 import {
   countriesByName,
   mockCountriesFetches,
-} from "../features/countries/countries.mock";
+} from "../features/countries/__mocks__/countries.mock";
 import App from "./App";
 import { store } from "./store";
 

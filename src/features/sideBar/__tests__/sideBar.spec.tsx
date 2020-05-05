@@ -3,10 +3,10 @@ import { fireEvent, render } from "@testing-library/react";
 import moment, { Moment } from "moment";
 import React from "react";
 import { Provider } from "react-redux";
-import { store as initialStore, storeConfig } from "../../app/store";
-import { countriesByName } from "../countries/countries.mock";
-import { Status } from "../countries/countriesTypes";
-import { SideBar } from "./SideBar";
+import { store as initialStore, storeConfig } from "../../../app/store";
+import { Status } from "../../countries/countriesTypes";
+import { countriesByName } from "../../countries/__mocks__/countries.mock";
+import { SideBar } from "../SideBar";
 
 describe("SideBar", () => {
   const date: Moment = moment("2020-04-20T00:00:00");

@@ -1,6 +1,6 @@
-import { COUNTRIES_URL, HISTORICAL_URL } from "../../api/corona";
-import { CountriesByName } from "./countriesTypes";
-import { mergeCountriesWithHistoricalData } from "./countriesUtils";
+import { COUNTRIES_URL, HISTORICAL_URL } from "../../../api/corona";
+import { CountriesByName } from "../countriesTypes";
+import { mergeCountriesWithHistoricalData } from "../countriesUtils";
 import countriesJson from "./json/countries.json";
 import historicalJson from "./json/historical.json";
 
