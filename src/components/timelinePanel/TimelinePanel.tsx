@@ -1,6 +1,6 @@
 import moment, { Moment } from "moment";
 import React, { memo, useCallback } from "react";
-import "./TimelinePanel.css";
+import "./TimelinePanel.scss";
 
 interface TimelinePanelProps {
   date?: Moment;
