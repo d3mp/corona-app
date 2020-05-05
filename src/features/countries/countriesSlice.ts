@@ -6,7 +6,7 @@ import {
   SerializedError,
 } from "@reduxjs/toolkit";
 import _ from "lodash";
-import { Moment } from "moment";
+import moment, { Moment } from "moment";
 import { SortDirection, SortDirectionType } from "react-virtualized";
 import * as CoronaAPI from "../../api/corona";
 import { RootState } from "../../app/store";
@@ -105,22 +105,13 @@ export const selectCountries = createSelector(
 );
 
 export const selectFilteredCountries = createSelector(
-  [
-    selectCountries,
-    selectMomentTimelineDate,
-    selectSearchValue,
-    selectFilterBy,
-    selectFavoriteCountries,
-  ],
+  [selectCountries, selectSearchValue, selectFilterBy, selectFavoriteCountries],
   (
     countries: Country[],
-    timelineDate: Moment,
     searchValue: string,
     filterBy: FilterBy,
     favoriteCountries: HashMap<boolean>
   ) => {
-    const date: string = timelineDate.format(SHORT_DATE_FORMAT);
-
     return countries.filter((country: Country) => {
       // Filter by search
       if (searchValue && !country.country.match(new RegExp(searchValue, "i"))) {
@@ -132,6 +123,17 @@ export const selectFilteredCountries = createSelector(
         return false;
       }
 
+      return true;
+    });
+  }
+);
+
+export const selectFilteredWithTimelineCountries = createSelector(
+  [selectFilteredCountries, selectMomentTimelineDate],
+  (countries: Country[], timelineDate: Moment) => {
+    const date: string = timelineDate.format(SHORT_DATE_FORMAT);
+
+    return countries.filter((country: Country) => {
       return (
         country.timeline.active[date] ||
         country.timeline.confirmed[date] ||
@@ -144,7 +146,7 @@ export const selectFilteredCountries = createSelector(
 
 export const selectFilteredAndOrderedCountries = createSelector(
   [
-    selectFilteredCountries,
+    selectFilteredWithTimelineCountries,
     selectMomentTimelineDate,
     selectSortBy,
     selectSortDirection,
@@ -173,7 +175,7 @@ export const selectFilteredAndOrderedCountries = createSelector(
 );
 
 export const selectFilteredSumData = createSelector(
-  [selectFilteredCountries, selectMomentTimelineDate],
+  [selectFilteredWithTimelineCountries, selectMomentTimelineDate],
   (countries: Country[], timelineDate: Moment) => {
     const defaultValues: TotalByCountry = {
       active: 0,
@@ -195,7 +197,7 @@ export const selectFilteredSumData = createSelector(
 );
 
 export const selectlFilteredCountriesFC = createSelector(
-  [selectFilteredCountries],
+  [selectFilteredWithTimelineCountries],
   (countries: Country[]) => {
     const featuerCollection: GeoJSON.FeatureCollection<
       GeoJSON.Point,
@@ -220,6 +222,25 @@ export const selectlFilteredCountriesFC = createSelector(
     };
 
     return featuerCollection;
+  }
+);
+
+export const selectFilteredStartTimelineDate = createSelector(
+  [selectFilteredCountries],
+  (countries: Country[]) => {
+    return countries.reduce((startDate: Moment, curr: Country) => {
+      const confirmedKeys = Object.keys(curr.timeline[Status.Confirmed]);
+
+      if (confirmedKeys.length) {
+        const minDate = moment(confirmedKeys[0], SHORT_DATE_FORMAT);
+
+        if (startDate.isAfter(minDate)) {
+          return minDate;
+        }
+      }
+
+      return startDate;
+    }, moment());
   }
 );
 

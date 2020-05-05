@@ -4,7 +4,10 @@ import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { SearchBar } from "../../components/searchBar/SearchBar";
 import TimelinePanel from "../../components/timelinePanel/TimelinePanel";
-import { selectFilteredSumData } from "../countries/countriesSlice";
+import {
+  selectFilteredStartTimelineDate,
+  selectFilteredSumData,
+} from "../countries/countriesSlice";
 import { Status } from "../countries/countriesTypes";
 import { CountriesTable } from "../countriesTable/CountriesTable";
 import { COLORS_BY_FILTER_TYPE } from "../map/mapUtils";
@@ -23,6 +26,7 @@ import { FilterBy } from "./sideBarTypes";
 export function SideBar() {
   const dispatch = useDispatch();
   const date: Moment = useSelector(selectMomentTimelineDate);
+  const startDate: Moment = useSelector(selectFilteredStartTimelineDate);
   const filterBy: FilterBy = useSelector(selectFilterBy);
   const sumData = useSelector(selectFilteredSumData);
   const isTableVisibleOnMobile: boolean = useSelector(
@@ -56,7 +60,7 @@ export function SideBar() {
       <TimelinePanel
         date={moment(date)}
         onChange={(date) => dispatch(setTimelineDate(date.format()))}
-        minDate={moment("2020-01-22T00:00:00")}
+        minDate={startDate}
         maxDate={moment()}
       />
       <SearchBar
