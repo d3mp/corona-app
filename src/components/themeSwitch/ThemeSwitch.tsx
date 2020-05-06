@@ -1,7 +1,7 @@
 import clsx from "clsx";
 import React, { useContext } from "react";
 import { Theme, ThemeContext } from "../../common/theme/ThemeContext";
-import styles from "./ThemeSwitch.module.css";
+import styles from "./ThemeSwitch.module.scss";
 
 function ThemeSwitch() {
   const { theme, switchTheme } = useContext(ThemeContext);
