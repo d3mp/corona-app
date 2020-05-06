@@ -4,6 +4,7 @@ import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { SearchBar } from "../../components/searchBar/SearchBar";
 import TimelinePanel from "../../components/timelinePanel/TimelinePanel";
+import { TotalCount } from "../../components/totalCount/TotalCount";
 import {
   selectFilteredStartTimelineDate,
   selectFilteredSumData,
@@ -11,7 +12,7 @@ import {
 import { Status } from "../countries/countriesTypes";
 import { CountriesTable } from "../countriesTable/CountriesTable";
 import { COLORS_BY_FILTER_TYPE } from "../map/mapUtils";
-import styles from "./SideBar.module.css";
+import styles from "./SideBar.module.scss";
 import {
   selectFilterBy,
   selectIsTableVisibleOnMobile,
@@ -20,10 +21,9 @@ import {
   setSearchValue,
   setTimelineDate,
 } from "./sideBarSlice";
-import { SideBarTotalCount } from "./SideBarTotalCount";
 import { FilterBy } from "./sideBarTypes";
 
-export function SideBar() {
+function SideBar() {
   const dispatch = useDispatch();
   const date: Moment = useSelector(selectMomentTimelineDate);
   const startDate: Moment = useSelector(selectFilteredStartTimelineDate);
@@ -45,7 +45,7 @@ export function SideBar() {
     >
       <div className={styles.header}>
         {totals.map(({ label, status }) => (
-          <SideBarTotalCount
+          <TotalCount
             key={status}
             label={label}
             quantity={sumData[status]}
@@ -72,3 +72,5 @@ export function SideBar() {
     </div>
   );
 }
+
+export { SideBar };

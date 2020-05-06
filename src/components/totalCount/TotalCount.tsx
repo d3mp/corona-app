@@ -1,8 +1,8 @@
 import clsx from "clsx";
 import React from "react";
-import styles from "./SideBar.module.css";
+import styles from "./TotalCount.module.scss";
 
-interface SideBarTotalCount {
+interface TotalCount {
   label: string;
   quantity: number;
   activeColor: string;
@@ -10,28 +10,27 @@ interface SideBarTotalCount {
   onClick: () => void;
 }
 
-export function SideBarTotalCount({
+function TotalCount({
   label,
   quantity,
   activeColor,
   isActive,
   onClick,
-}: SideBarTotalCount) {
+}: TotalCount) {
   return (
     <div
-      className={clsx(styles.totalCount, isActive && styles.totalCountActive)}
+      className={clsx(styles.totalCount, isActive && styles.active)}
       style={isActive ? { color: activeColor } : {}}
       onClick={onClick}
     >
-      <div className={styles.totalCountLabel} data-testid="total-count-label">
+      <div className={styles.label} data-testid="total-count-label">
         {label}
       </div>
-      <div
-        className={styles.totalCountTotalQuantity}
-        data-testid="total-count-value"
-      >
+      <div className={styles.quantity} data-testid="total-count-value">
         {quantity.toLocaleString()}
       </div>
     </div>
   );
 }
+
+export { TotalCount };

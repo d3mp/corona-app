@@ -1,0 +1,18 @@
+.totalCount {
+  flex: 1;
+  color: var(--text-color-primary);
+  text-align: center;
+  cursor: pointer;
+
+  &:hover {
+    opacity: 0.8;
+  }
+
+  .label {
+    font-size: 0.75rem;
+  }
+
+  .quantity {
+    font-weight: bold;
+  }
+}
