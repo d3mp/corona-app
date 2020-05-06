@@ -1,13 +1,13 @@
 import { Star, StarBorder } from "@material-ui/icons";
 import clsx from "clsx";
 import _ from "lodash";
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { AutoSizer, Column, SortDirectionType, Table } from "react-virtualized";
 import "react-virtualized/styles.css";
 import { SHORT_DATE_FORMAT } from "../../common/constants/global";
-import usePrevious from "../../common/hooks/usePrevious";
-import { HashMap, Nullable } from "../../genericTypes";
+import useLocalStorage from "../../common/hooks/useLocalStorage";
+import { HashMap } from "../../genericTypes";
 import {
   selectFavoriteCountries,
   selectFilteredAndOrderedCountries,
@@ -30,16 +30,17 @@ import { FilterBy } from "../sideBar/sideBarTypes";
 import styles from "./CountriesTable.module.scss";
 import { headerRenderer } from "./CountriesTableHeader";
 
-const FAVORITE_COUNTRIES = "favoriteCountries";
-
 export function CountriesTable() {
   const dispatch = useDispatch();
+  const isFavoritesInitialized = useRef<boolean>(false);
   const countries: Country[] = useSelector(selectFilteredAndOrderedCountries);
   const filterBy: FilterBy = useSelector(selectFilterBy);
-  const favCountries: HashMap<boolean> = useSelector(selectFavoriteCountries);
-  const prevFavCountries: HashMap<boolean> = usePrevious<HashMap<boolean>>(
-    favCountries
+  const favoriteCountries: HashMap<boolean> = useSelector(
+    selectFavoriteCountries
   );
+  const [favoriteCountriesLS, setFavoriteCountriesLS] = useLocalStorage<
+    HashMap<boolean>
+  >("favoriteCountries", favoriteCountries);
   const date: string = useSelector(selectMomentTimelineDate).format(
     SHORT_DATE_FORMAT
   );
@@ -50,33 +51,16 @@ export function CountriesTable() {
   );
 
   useEffect(() => {
-    try {
-      const favoriteCountriesJson: Nullable<string> = localStorage.getItem(
-        FAVORITE_COUNTRIES
-      );
-
-      if (favoriteCountriesJson) {
-        const favoriteCountries = JSON.parse(favoriteCountriesJson) as HashMap<
-          boolean
-        >;
-        dispatch(updateFavoriteCountries(favoriteCountries));
-      }
-    } catch (ex) {
-      // TODO: show some error message
-      console.warn(ex);
-    }
-  }, [dispatch]);
-
-  useEffect(() => {
-    if (prevFavCountries && !_.isEqual(favCountries, prevFavCountries)) {
-      try {
-        localStorage.setItem(FAVORITE_COUNTRIES, JSON.stringify(favCountries));
-      } catch (ex) {
-        // TODO: show some error message
-        console.warn(ex);
+    if (!isFavoritesInitialized.current) {
+      isFavoritesInitialized.current = true;
+      dispatch(updateFavoriteCountries(favoriteCountriesLS));
+    } else {
+      if (!_.isEqual(favoriteCountries, favoriteCountriesLS)) {
+        setFavoriteCountriesLS(favoriteCountries);
       }
     }
-  }, [favCountries, prevFavCountries]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [favoriteCountries]);
 
   return (
     <div style={{ height: "100%" }}>
@@ -181,7 +165,7 @@ export function CountriesTable() {
                     );
                   }}
                   cellRenderer={({ rowData }) => {
-                    const StarIcon = favCountries[rowData.country]
+                    const StarIcon = favoriteCountries[rowData.country]
                       ? Star
                       : StarBorder;
 

@@ -1,5 +1,6 @@
-import React, { useLayoutEffect, useState } from "react";
+import React, { useLayoutEffect } from "react";
 import { Nullable } from "../../genericTypes";
+import useLocalStorage from "../hooks/useLocalStorage";
 import { getBrowserTheme } from "./themeUtils";
 
 export enum Theme {
@@ -22,9 +23,10 @@ interface ThemeContextProviderProps {
 }
 
 export function ThemeContextProvider({ children }: ThemeContextProviderProps) {
-  const defaultTheme: Theme =
-    (localStorage.getItem("theme") as Nullable<Theme>) || getBrowserTheme();
-  const [theme, switchTheme] = useState(defaultTheme);
+  const [theme, switchTheme] = useLocalStorage<Theme>(
+    "theme",
+    getBrowserTheme()
+  );
 
   useLayoutEffect(() => {
     const prevTheme: string = theme === Theme.Dark ? Theme.Light : Theme.Dark;
@@ -34,8 +36,6 @@ export function ThemeContextProvider({ children }: ThemeContextProviderProps) {
       : root.className.includes(prevTheme)
       ? root.className.replace(prevTheme, theme)
       : root.className.split(" ").concat(theme).join(" ");
-
-    localStorage.setItem("theme", theme);
   }, [theme]);
 
   return (
