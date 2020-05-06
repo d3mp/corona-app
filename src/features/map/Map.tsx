@@ -32,7 +32,7 @@ import {
   selectMomentTimelineDate,
 } from "../sideBar/sideBarSlice";
 import { FilterBy } from "../sideBar/sideBarTypes";
-import styles from "./Map.module.css";
+import styles from "./Map.module.scss";
 import { selectViewPort } from "./mapSlice";
 import {
   COLORS_BY_FILTER_TYPE,
