@@ -4,7 +4,7 @@ export const COLORS_BY_FILTER_TYPE = {
   [Status.Confirmed]: "#FF5733",
   [Status.Recovered]: "#7ECB88",
   [Status.Deaths]: "#BD33FF",
-  [Status.Active]: "#FFBD33",
+  [Status.Active]: "#FF8A33",
 };
 
 /**
