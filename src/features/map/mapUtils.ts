@@ -2,7 +2,7 @@ import { Status } from "../countries/countriesTypes";
 
 export const COLORS_BY_FILTER_TYPE = {
   [Status.Confirmed]: "#FF5733",
-  [Status.Recovered]: "#7ECB88",
+  [Status.Recovered]: "#6EB277",
   [Status.Deaths]: "#BD33FF",
   [Status.Active]: "#FF8A33",
 };
