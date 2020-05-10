@@ -40,8 +40,7 @@ export function getInOurPais(max: number = 1000000) {
  */
 export function getTimelineExpression(
   operator: mapboxgl.ExpressionName = "get",
-  date: string,
-  status: Status
+  date: string
 ): mapboxgl.Expression {
-  return [operator, date, ["get", status, ["get", "timeline"]]];
+  return [operator, date];
 }

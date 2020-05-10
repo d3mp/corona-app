@@ -197,15 +197,15 @@ export const selectFilteredSumData = createSelector(
 );
 
 export const selectlFilteredCountriesFC = createSelector(
-  [selectFilteredWithTimelineCountries],
-  (countries: Country[]) => {
+  [selectFilteredWithTimelineCountries, selectFilterBy],
+  (countries: Country[], filterBy) => {
     const featuerCollection: GeoJSON.FeatureCollection<
       GeoJSON.Point,
       Country
     > = {
       type: "FeatureCollection",
       features: countries.map((country) => {
-        const feature: GeoJSON.Feature<GeoJSON.Point, Country> = {
+        const feature: GeoJSON.Feature<GeoJSON.Point, any> = {
           type: "Feature",
           geometry: {
             type: "Point",
@@ -214,7 +214,12 @@ export const selectlFilteredCountriesFC = createSelector(
               country.coordinates.latitude,
             ],
           },
-          properties: country,
+          properties: {
+            country: country.country,
+            // Dates added to the root of properties because otherwise
+            // it will be a JSON and circle hovering will not work
+            ...country.timeline[filterBy.status],
+          },
         };
 
         return feature;

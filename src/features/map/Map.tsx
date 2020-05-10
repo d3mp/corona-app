@@ -59,16 +59,8 @@ function Map() {
   const filterBy: FilterBy = useSelector(selectFilterBy);
   const currentMoment: Moment = useSelector(selectMomentTimelineDate);
   const date: string = currentMoment.format(SHORT_DATE_FORMAT);
-  const hasCasesExpression = getTimelineExpression(
-    "has",
-    date,
-    filterBy.status
-  );
-  const getCasesExpression = getTimelineExpression(
-    "get",
-    date,
-    filterBy.status
-  );
+  const hasCasesExpression = getTimelineExpression("has", date);
+  const getCasesExpression = getTimelineExpression("get", date);
   const onHover = useCallback(
     ({ features = [], srcEvent: { offsetX, offsetY } }) => {
       const feature: Feature = features.find((f: any) =>
