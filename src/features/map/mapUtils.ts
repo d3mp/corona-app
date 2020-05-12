@@ -11,7 +11,7 @@ export const COLORS_BY_FILTER_TYPE = {
  * Creates an array with input/output paris for interpolate expression
  * @param max
  */
-export function getInOurPais(max: number = 1000000) {
+export function getInOurPais(max: number = 50000000) {
   const steps = [0, 1, 5, 10, 50, 100, 500, 1000, 2000];
   let step = 5000;
 
