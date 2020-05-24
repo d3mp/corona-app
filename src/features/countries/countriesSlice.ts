@@ -112,9 +112,13 @@ export const selectFilteredCountries = createSelector(
     filterBy: FilterBy,
     favoriteCountries: HashMap<boolean>
   ) => {
+    const searchValueLowerCase = searchValue.toLowerCase();
     return countries.filter((country: Country) => {
       // Filter by search
-      if (searchValue && !country.country.match(new RegExp(searchValue, "i"))) {
+      if (
+        searchValue &&
+        !country.country.toLowerCase().includes(searchValueLowerCase)
+      ) {
         return false;
       }
 
