@@ -1,18 +1,15 @@
 import { Star, StarBorder } from "@material-ui/icons";
 import clsx from "clsx";
-import _ from "lodash";
-import React, { useEffect, useRef } from "react";
+import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { AutoSizer, Column, SortDirectionType, Table } from "react-virtualized";
 import "react-virtualized/styles.css";
 import { SHORT_DATE_FORMAT } from "../../common/constants/global";
-import useLocalStorage from "../../common/hooks/useLocalStorage";
 import { HashMap } from "../../genericTypes";
 import {
   selectFavoriteCountries,
   selectFilteredAndOrderedCountries,
   toggleFavorite,
-  updateFavoriteCountries,
 } from "../countries/countriesSlice";
 import { Country, Status } from "../countries/countriesTypes";
 import { setViewport } from "../map/mapSlice";
@@ -32,15 +29,11 @@ import { headerRenderer } from "./CountriesTableHeader";
 
 export function CountriesTable() {
   const dispatch = useDispatch();
-  const isFavoritesInitialized = useRef<boolean>(false);
   const countries: Country[] = useSelector(selectFilteredAndOrderedCountries);
   const filterBy: FilterBy = useSelector(selectFilterBy);
   const favoriteCountries: HashMap<boolean> = useSelector(
     selectFavoriteCountries
   );
-  const [favoriteCountriesLS, setFavoriteCountriesLS] = useLocalStorage<
-    HashMap<boolean>
-  >("favoriteCountries", favoriteCountries);
   const date: string = useSelector(selectMomentTimelineDate).format(
     SHORT_DATE_FORMAT
   );
@@ -49,18 +42,6 @@ export function CountriesTable() {
   const isTableVisibleOnMobile: boolean = useSelector(
     selectIsTableVisibleOnMobile
   );
-
-  useEffect(() => {
-    if (!isFavoritesInitialized.current) {
-      isFavoritesInitialized.current = true;
-      dispatch(updateFavoriteCountries(favoriteCountriesLS));
-    } else {
-      if (!_.isEqual(favoriteCountries, favoriteCountriesLS)) {
-        setFavoriteCountriesLS(favoriteCountries);
-      }
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [favoriteCountries]);
 
   return (
     <div style={{ height: "100%" }}>

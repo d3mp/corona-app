@@ -222,7 +222,7 @@ export const selectlFilteredCountriesFC = createSelector(
             country: country.country,
             // Dates added to the root of properties because otherwise
             // it will be a JSON and circle hovering will not work
-            ...country.timeline[filterBy.status],
+            ...country.timeline[filterBy.status as Status],
           },
         };
 
