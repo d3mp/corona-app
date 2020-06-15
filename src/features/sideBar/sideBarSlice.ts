@@ -1,7 +1,7 @@
 import { createSelector, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import moment from "moment";
 import { SortDirection, SortDirectionType } from "react-virtualized";
-import { RootState } from "../../app/store";
+import { RootState } from "../../app/rootReducer";
 import { Status } from "../countries/countriesTypes";
 import { FilterBy } from "./sideBarTypes";
 

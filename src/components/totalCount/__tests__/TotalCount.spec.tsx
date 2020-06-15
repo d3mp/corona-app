@@ -2,7 +2,7 @@ import { fireEvent, render } from "@testing-library/react";
 import React from "react";
 import { Status } from "../../../features/countries/countriesTypes";
 import { COLORS_BY_FILTER_TYPE } from "../../../features/map/mapUtils";
-import { TotalCount } from "../TotalCount";
+import TotalCount from "../TotalCount";
 
 describe("TotalCount", () => {
   it("shold display label and quantity", () => {

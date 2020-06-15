@@ -3,9 +3,11 @@ import ReactDOM from "react-dom";
 import { Provider } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
 import App from "./app/App";
-import { persistor, store } from "./app/store";
+import getStore from "./app/store";
 import "./index.css";
 import * as serviceWorker from "./serviceWorker";
+
+const { store, persistor } = getStore();
 
 ReactDOM.render(
   <Provider store={store}>

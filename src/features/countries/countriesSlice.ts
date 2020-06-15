@@ -9,7 +9,7 @@ import _ from "lodash";
 import moment, { Moment } from "moment";
 import { SortDirection, SortDirectionType } from "react-virtualized";
 import * as CoronaAPI from "../../api/corona";
-import { RootState } from "../../app/store";
+import { RootState } from "../../app/rootReducer";
 import { SHORT_DATE_FORMAT } from "../../common/constants/global";
 import { HashMap, Nullable } from "../../genericTypes";
 import {
@@ -237,19 +237,27 @@ export const selectlFilteredCountriesFC = createSelector(
 export const selectFilteredStartTimelineDate = createSelector(
   [selectFilteredCountries],
   (countries: Country[]) => {
-    return countries.reduce((startDate: Moment, curr: Country) => {
-      const confirmedKeys = Object.keys(curr.timeline[Status.Confirmed]);
+    return countries.reduce(
+      (startDate: Moment, curr: Country) => {
+        const confirmedKeys = Object.keys(curr.timeline[Status.Confirmed]);
 
-      if (confirmedKeys.length) {
-        const minDate = moment(confirmedKeys[0], SHORT_DATE_FORMAT);
+        if (confirmedKeys.length) {
+          const minDate = moment(confirmedKeys[0], SHORT_DATE_FORMAT);
 
-        if (startDate.isAfter(minDate)) {
-          return minDate;
+          if (startDate.isAfter(minDate)) {
+            return minDate;
+          }
         }
-      }
 
-      return startDate;
-    }, moment());
+        return startDate;
+      },
+      moment().set({
+        hours: 0,
+        minutes: 0,
+        seconds: 0,
+        milliseconds: 0,
+      })
+    );
   }
 );
 

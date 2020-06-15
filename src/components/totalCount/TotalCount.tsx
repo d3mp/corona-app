@@ -1,36 +1,37 @@
-import clsx from "clsx";
 import React from "react";
-import styles from "./TotalCount.module.scss";
+import useStyles from "./totalCount.styles";
 
-interface TotalCount {
+type Props = {
   label: string;
   quantity: number;
   activeColor: string;
   isActive: boolean;
   onClick: () => void;
-}
+};
 
-function TotalCount({
+const TotalCount = ({
   label,
   quantity,
   activeColor,
   isActive,
   onClick,
-}: TotalCount) {
+}: Props) => {
+  const classes = useStyles();
+
   return (
     <div
-      className={clsx(styles.totalCount, isActive && styles.active)}
+      className={classes.root}
       style={isActive ? { color: activeColor } : {}}
       onClick={onClick}
     >
-      <div className={styles.label} data-testid="total-count-label">
+      <div className={classes.label} data-testid="total-count-label">
         {label}
       </div>
-      <div className={styles.quantity} data-testid="total-count-value">
+      <div className={classes.quantity} data-testid="total-count-value">
         {quantity.toLocaleString()}
       </div>
     </div>
   );
-}
+};
 
-export { TotalCount };
+export default TotalCount;

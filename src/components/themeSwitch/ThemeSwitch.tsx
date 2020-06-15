@@ -1,14 +1,16 @@
 import clsx from "clsx";
 import React, { useContext } from "react";
 import { Theme, ThemeContext } from "../../common/theme/ThemeContext";
-import styles from "./ThemeSwitch.module.scss";
+import useStyles from "./themeSwitch.styles";
 
-function ThemeSwitch() {
+const ThemeSwitch = () => {
+  const classes = useStyles();
   const { theme, switchTheme } = useContext(ThemeContext);
 
   return (
-    <label className={styles.themeSwitch}>
+    <label className={classes.root}>
       <input
+        className={classes.checkbox}
         type="checkbox"
         checked={theme === Theme.Dark}
         onChange={() =>
@@ -16,7 +18,7 @@ function ThemeSwitch() {
         }
       />
       <span
-        className={clsx(styles.icon, theme === Theme.Dark && styles.iconDark)}
+        className={clsx(classes.icon, theme === Theme.Dark && classes.iconDark)}
         aria-label="Switch theme"
         role="img"
       >
@@ -24,6 +26,6 @@ function ThemeSwitch() {
       </span>
     </label>
   );
-}
+};
 
-export { ThemeSwitch };
+export default ThemeSwitch;

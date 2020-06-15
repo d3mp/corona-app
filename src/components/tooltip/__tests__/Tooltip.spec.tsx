@@ -3,7 +3,7 @@ import moment, { Moment } from "moment";
 import React from "react";
 import { countriesByName } from "../../../features/countries/__mocks__/countries.mock";
 import { HoveredCountry } from "../../../features/map/mapTypes";
-import { Tooltip } from "../Tooltip";
+import Tooltip from "../Tooltip";
 
 describe("Tooltip", () => {
   it("should not render tooltip without hoveredCountry", () => {

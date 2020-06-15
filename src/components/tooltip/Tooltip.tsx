@@ -1,18 +1,35 @@
+import { makeStyles, Paper, Theme, Typography } from "@material-ui/core";
 import { Moment } from "moment";
 import React from "react";
 import { SHORT_DATE_FORMAT } from "../../common/constants/global";
 import { Status } from "../../features/countries/countriesTypes";
 import { HoveredCountry } from "../../features/map/mapTypes";
 import { Nullable } from "../../genericTypes";
-import styles from "./Tooltip.module.scss";
-import { TooltipRow } from "./TooltipRow";
+import TooltipRow from "./TooltipRow";
 
-interface TooltipProps {
+const useStyles = makeStyles((theme: Theme) => ({
+  tooltip: {
+    position: "absolute",
+    maxWidth: 400,
+    margin: theme.spacing(1),
+    padding: theme.spacing(2),
+    borderColor: theme.palette.divider,
+    pointerEvents: "none",
+  },
+  country: {
+    fontSize: theme.typography.body2.fontSize,
+    fontWeight: theme.typography.fontWeightMedium,
+  },
+}));
+
+type Props = {
   date: Moment;
   hoveredCountry?: Nullable<HoveredCountry>;
-}
+};
 
-function Tooltip({ date, hoveredCountry }: TooltipProps) {
+const Tooltip = ({ date, hoveredCountry }: Props) => {
+  const classes = useStyles();
+
   if (hoveredCountry) {
     const currentDate: string = date.format(SHORT_DATE_FORMAT);
     const prevDate: string = date
@@ -28,14 +45,17 @@ function Tooltip({ date, hoveredCountry }: TooltipProps) {
     ];
 
     return (
-      <div
-        className={styles.tooltip}
+      <Paper
+        className={classes.tooltip}
         style={{
+          position: "absolute",
           top: hoveredCountry.offsetY,
           left: hoveredCountry.offsetX,
         }}
       >
-        <b data-testid="tooltip-country">{hoveredCountry.country.country}</b>
+        <Typography className={classes.country} data-testid="tooltip-country">
+          {hoveredCountry.country.country}
+        </Typography>
         {tooltipRows.map(({ label, status }) => (
           <TooltipRow
             key={status}
@@ -45,11 +65,11 @@ function Tooltip({ date, hoveredCountry }: TooltipProps) {
             status={status}
           />
         ))}
-      </div>
+      </Paper>
     );
   }
 
   return null;
-}
+};
 
-export { Tooltip };
+export default Tooltip;

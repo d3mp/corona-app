@@ -1,10 +1,20 @@
-import { Star, StarBorder } from "@material-ui/icons";
-import clsx from "clsx";
-import React from "react";
+import { Paper } from "@material-ui/core";
+import React, { useCallback, useContext } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { AutoSizer, Column, SortDirectionType, Table } from "react-virtualized";
+import {
+  AutoSizer,
+  Column,
+  SortDirectionType,
+  Table,
+  TableCellProps,
+  TableHeaderProps,
+} from "react-virtualized";
 import "react-virtualized/styles.css";
 import { SHORT_DATE_FORMAT } from "../../common/constants/global";
+import { FavoriteButton } from "../../components/FavoriteButton/FavoriteButton";
+import TableBodyCell from "../../components/TableBodyCell/TableBodyCell";
+import TableHeaderCell from "../../components/TableHeaderCell/TableHeaderCell";
+import { TabsContext } from "../../contexts/TabsContext";
 import { HashMap } from "../../genericTypes";
 import {
   selectFavoriteCountries,
@@ -15,20 +25,24 @@ import { Country, Status } from "../countries/countriesTypes";
 import { setViewport } from "../map/mapSlice";
 import {
   selectFilterBy,
-  selectIsTableVisibleOnMobile,
   selectMomentTimelineDate,
   selectSortBy,
   selectSortDirection,
   setFilterBy,
   sort,
-  toggleTableVisibility,
 } from "../sideBar/sideBarSlice";
 import { FilterBy } from "../sideBar/sideBarTypes";
-import styles from "./CountriesTable.module.scss";
-import { headerRenderer } from "./CountriesTableHeader";
+import useStyles, { headerHeight, rowHeight } from "./countriesTable.styles";
+
+const headerRenderer = (props: TableHeaderProps) => (
+  <TableHeaderCell {...props} />
+);
+const cellRenderer = (props: TableCellProps) => <TableBodyCell {...props} />;
 
 export function CountriesTable() {
+  const classes = useStyles();
   const dispatch = useDispatch();
+  const tabsContext = useContext(TabsContext);
   const countries: Country[] = useSelector(selectFilteredAndOrderedCountries);
   const filterBy: FilterBy = useSelector(selectFilterBy);
   const favoriteCountries: HashMap<boolean> = useSelector(
@@ -39,41 +53,79 @@ export function CountriesTable() {
   );
   const sortBy: string = useSelector(selectSortBy);
   const sortDirection: SortDirectionType = useSelector(selectSortDirection);
-  const isTableVisibleOnMobile: boolean = useSelector(
-    selectIsTableVisibleOnMobile
+
+  const onFavoriteHeaderClick = useCallback(
+    (e) => {
+      e.stopPropagation();
+      dispatch(
+        setFilterBy({
+          ...filterBy,
+          favorite: !filterBy.favorite,
+        })
+      );
+    },
+    [dispatch, filterBy]
+  );
+
+  const favoriteHeaderRenderer = useCallback(
+    (props: TableHeaderProps) => {
+      return headerRenderer({
+        ...props,
+        label: (
+          <FavoriteButton
+            isFavorite={filterBy.favorite}
+            onClick={onFavoriteHeaderClick}
+          />
+        ),
+      });
+    },
+    [filterBy.favorite, onFavoriteHeaderClick]
+  );
+
+  const favoriteCellRenderer = useCallback(
+    (props: TableCellProps) => {
+      return cellRenderer({
+        ...props,
+        cellData: (
+          <FavoriteButton
+            isFavorite={favoriteCountries[props.rowData.country]}
+            onClick={(e) => {
+              e.stopPropagation();
+              dispatch(toggleFavorite(props.rowData.country));
+            }}
+          />
+        ),
+      });
+    },
+    [dispatch, favoriteCountries]
   );
 
   return (
-    <div style={{ height: "100%" }}>
-      <div
-        className={clsx(
-          styles.container,
-          !isTableVisibleOnMobile && styles.hiddenContainer
-        )}
-      >
-        <AutoSizer>
-          {({ width, height }) => {
-            const indexWidth: number = 30;
-            const favWidth: number = 50;
-            const widthWithoutIndexAndFav =
-              (width - (indexWidth + favWidth)) / 100;
-            const colWidth = widthWithoutIndexAndFav * 20;
-            const countryWidth = widthWithoutIndexAndFav * 20;
+    <Paper className={classes.root}>
+      <AutoSizer>
+        {({ width, height }) => {
+          const indexWidth: number = 40;
+          const favWidth: number = 32 + 16; // 16 - side padding
+          const widthWithoutIndexAndFav =
+            (width - (indexWidth + favWidth)) / 100;
+          const colWidth = widthWithoutIndexAndFav * 20;
+          const countryWidth = widthWithoutIndexAndFav * 20;
 
-            return (
-              <Table
-                width={width}
-                height={height}
-                headerHeight={40}
-                rowHeight={50}
-                rowCount={countries.length}
-                rowClassName={rowClassName}
-                rowGetter={({ index }) => countries[index]}
-                onRowClick={({ rowData }: { rowData: Country }) => {
-                  if (isTableVisibleOnMobile) {
-                    dispatch(toggleTableVisibility());
-                  }
+          return (
+            <Table
+              width={width}
+              height={height}
+              headerHeight={headerHeight}
+              headerClassName={classes.rowColumn}
+              overscanRowCount={3}
+              rowHeight={rowHeight}
+              rowCount={countries.length}
+              rowClassName={classes.rowColumn}
+              rowGetter={({ index }) => countries[index]}
+              onRowClick={({ rowData }: { rowData: Country }) => {
+                tabsContext.setTab(1);
 
+                setTimeout(() => {
                   dispatch(
                     setViewport({
                       longitude: rowData.coordinates.longitude,
@@ -81,106 +133,73 @@ export function CountriesTable() {
                       zoom: 6,
                     })
                   );
-                }}
-                sort={({ sortBy, sortDirection }) =>
-                  dispatch(sort({ sortBy, sortDirection }))
+                }, 200);
+              }}
+              sort={({ sortBy, sortDirection }) =>
+                dispatch(sort({ sortBy, sortDirection }))
+              }
+              sortBy={sortBy}
+              sortDirection={sortDirection}
+            >
+              <Column
+                className={classes.rowColumn}
+                label="#"
+                dataKey="index"
+                disableSort
+                width={indexWidth}
+                cellRenderer={cellRenderer}
+                headerRenderer={headerRenderer}
+              />
+              <Column
+                className={classes.rowColumn}
+                label="Country"
+                dataKey="country"
+                defaultSortDirection="ASC"
+                cellRenderer={(props: TableCellProps) =>
+                  cellRenderer({
+                    ...props,
+                    cellData: (
+                      <div className={classes.doubleLine}>{props.cellData}</div>
+                    ),
+                  })
                 }
-                sortBy={sortBy}
-                sortDirection={sortDirection}
-              >
+                flexGrow={1}
+                headerRenderer={headerRenderer}
+                width={countryWidth}
+              />
+              {[
+                { label: "Confirmed", status: Status.Confirmed },
+                { label: "Recovered", status: Status.Recovered },
+                { label: "Deaths", status: Status.Deaths },
+                { label: "Active", status: Status.Active },
+              ].map((column) => (
                 <Column
-                  label="#"
-                  dataKey="index"
-                  disableSort
-                  width={indexWidth}
+                  className={classes.rowColumn}
+                  cellDataGetter={({ dataKey, rowData }) =>
+                    rowData.timeline[dataKey][date]?.toLocaleString() || 0
+                  }
+                  cellRenderer={cellRenderer}
+                  dataKey={column.status}
+                  defaultSortDirection="DESC"
                   headerRenderer={headerRenderer}
+                  key={column.status}
+                  label={column.label}
+                  width={colWidth}
                 />
-                <Column
-                  width={countryWidth}
-                  className={styles.countryCol}
-                  label="Country"
-                  dataKey="country"
-                  defaultSortDirection="ASC"
-                  headerRenderer={headerRenderer}
-                />
-                {[
-                  { label: "Confirmed", status: Status.Confirmed },
-                  { label: "Recovered", status: Status.Recovered },
-                  { label: "Deaths", status: Status.Deaths },
-                  { label: "Active", status: Status.Active },
-                ].map((column) => (
-                  <Column
-                    key={column.status}
-                    label={column.label}
-                    dataKey={column.status}
-                    defaultSortDirection="DESC"
-                    width={colWidth}
-                    headerRenderer={headerRenderer}
-                    cellDataGetter={({ dataKey, rowData }) =>
-                      rowData.timeline[dataKey][date]?.toLocaleString() || 0
-                    }
-                  />
-                ))}
-                <Column
-                  label=""
-                  dataKey="favorite"
-                  disableSort
-                  width={favWidth}
-                  headerRenderer={() => {
-                    const StarIcon = filterBy.favorite ? Star : StarBorder;
-
-                    return (
-                      <StarIcon
-                        className={styles.favoriteIcon}
-                        data-testid="filter-by-favorite"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          dispatch(
-                            setFilterBy({
-                              ...filterBy,
-                              favorite: !filterBy.favorite,
-                            })
-                          );
-                        }}
-                      />
-                    );
-                  }}
-                  cellRenderer={({ rowData }) => {
-                    const StarIcon = favoriteCountries[rowData.country]
-                      ? Star
-                      : StarBorder;
-
-                    return (
-                      <StarIcon
-                        className={styles.favoriteIcon}
-                        data-testid="toggle-favorite"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          dispatch(toggleFavorite(rowData.country));
-                        }}
-                      />
-                    );
-                  }}
-                />
-              </Table>
-            );
-          }}
-        </AutoSizer>
-      </div>
-      <button
-        className={styles.toggleTable}
-        onClick={() => dispatch(toggleTableVisibility())}
-      >
-        {`${isTableVisibleOnMobile ? "Hide" : "Show"} table`}
-      </button>
-    </div>
+              ))}
+              <Column
+                className={classes.rowColumn}
+                cellRenderer={favoriteCellRenderer}
+                dataKey="favorite"
+                disableSort
+                headerRenderer={favoriteHeaderRenderer}
+                label=""
+                width={favWidth}
+              />
+            </Table>
+          );
+        }}
+      </AutoSizer>
+    </Paper>
   );
-}
-
-function rowClassName({ index }: { index: number }): string {
-  if (index >= 0) {
-    return index % 2 ? styles.evenRow : styles.oddRow;
-  }
-
-  return styles.headerRow;
 }

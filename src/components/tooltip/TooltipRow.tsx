@@ -1,6 +1,27 @@
+import { makeStyles, Theme, Typography } from "@material-ui/core";
 import React from "react";
 import { Status } from "../../features/countries/countriesTypes";
 import { COLORS_BY_FILTER_TYPE } from "../../features/map/mapUtils";
+
+const useStyles = makeStyles((theme: Theme) => ({
+  tooltipRow: {
+    display: "flex",
+  },
+  label: {
+    flex: 1,
+    paddingTop: theme.spacing(0.3),
+    whiteSpace: "nowrap",
+
+    "&:last-child": {
+      paddingLeft: theme.spacing(1),
+      textAlign: "right",
+    },
+  },
+  quantityChange: {
+    paddingLeft: theme.spacing(0.1),
+    verticalAlign: "top",
+  },
+}));
 
 interface TooltipRowProps {
   label: string;
@@ -9,23 +30,41 @@ interface TooltipRowProps {
   status: Status;
 }
 
-function TooltipRow({ label, value, perDay, status }: TooltipRowProps) {
+const TooltipRow = ({ label, value, perDay, status }: TooltipRowProps) => {
+  const classes = useStyles();
+
   return (
-    <div>
-      <span data-testid="tooltip-label">{label}:</span>
-      <span
-        data-testid="tooltip-value"
+    <div className={classes.tooltipRow}>
+      <Typography
+        className={classes.label}
+        variant="body2"
+        component="span"
+        data-testid="tooltip-label"
+      >
+        {label}:
+      </Typography>
+      <Typography
+        className={classes.label}
+        align="right"
+        variant="body2"
+        component="span"
         style={{ color: COLORS_BY_FILTER_TYPE[status] }}
+        data-testid="tooltip-value"
       >
         {value?.toLocaleString() || 0}
-        <sup data-testid="difference">
+        <Typography
+          className={classes.quantityChange}
+          variant="caption"
+          component="sup"
+          data-testid="difference"
+        >
           {`(${perDay > 0 ? "+" : ""}${
             (!isNaN(perDay) && perDay?.toLocaleString()) || 0
           })`}
-        </sup>
-      </span>
+        </Typography>
+      </Typography>
     </div>
   );
-}
+};
 
-export { TooltipRow };
+export default TooltipRow;

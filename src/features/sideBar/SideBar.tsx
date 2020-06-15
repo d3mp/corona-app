@@ -1,76 +1,58 @@
-import clsx from "clsx";
-import moment, { Moment } from "moment";
+import { Drawer, Toolbar } from "@material-ui/core";
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { SearchBar } from "../../components/searchBar/SearchBar";
-import TimelinePanel from "../../components/timelinePanel/TimelinePanel";
-import { TotalCount } from "../../components/totalCount/TotalCount";
-import {
-  selectFilteredStartTimelineDate,
-  selectFilteredSumData,
-} from "../countries/countriesSlice";
+import TotalTabs, { Tab } from "../../components/TotalTabs/TotalTabs";
+import { selectFilteredSumData } from "../countries/countriesSlice";
 import { Status } from "../countries/countriesTypes";
 import { CountriesTable } from "../countriesTable/CountriesTable";
 import { COLORS_BY_FILTER_TYPE } from "../map/mapUtils";
-import styles from "./SideBar.module.scss";
-import {
-  selectFilterBy,
-  selectIsTableVisibleOnMobile,
-  selectMomentTimelineDate,
-  setFilterBy,
-  setSearchValue,
-  setTimelineDate,
-} from "./sideBarSlice";
+import useStyles from "./sideBar.styles";
+import { selectFilterBy, setFilterBy } from "./sideBarSlice";
 import { FilterBy } from "./sideBarTypes";
 
-function SideBar() {
+const tabs: Tab[] = [
+  { key: Status.Confirmed, label: "Confirmed", value: null },
+  { key: Status.Recovered, label: "Recovered", value: null },
+  { key: Status.Deaths, label: "Deaths", value: null },
+  { key: Status.Active, label: "Active", value: null },
+];
+
+const SideBar = () => {
+  const classes = useStyles();
   const dispatch = useDispatch();
-  const date: Moment = useSelector(selectMomentTimelineDate);
-  const startDate: Moment = useSelector(selectFilteredStartTimelineDate);
   const filterBy: FilterBy = useSelector(selectFilterBy);
   const sumData = useSelector(selectFilteredSumData);
-  const isTableVisibleOnMobile: boolean = useSelector(
-    selectIsTableVisibleOnMobile
-  );
-  const totals = [
-    { label: "Confirmed", status: Status.Confirmed },
-    { label: "Recovered", status: Status.Recovered },
-    { label: "Deaths", status: Status.Deaths },
-    { label: "Active", status: Status.Active },
-  ];
 
   return (
-    <div
-      className={clsx(styles.sideBar, isTableVisibleOnMobile && styles.open)}
+    <Drawer
+      className={classes.drawer}
+      variant="permanent"
+      classes={{
+        paper: classes.drawerPaper,
+      }}
+      anchor="left"
     >
-      <div className={styles.header}>
-        {totals.map(({ label, status }) => (
-          <TotalCount
-            key={status}
-            label={label}
-            quantity={sumData[status]}
-            activeColor={COLORS_BY_FILTER_TYPE[filterBy.status]}
-            isActive={filterBy.status === status}
-            onClick={() =>
-              dispatch(setFilterBy({ status, favorite: filterBy.favorite }))
-            }
-          />
-        ))}
-      </div>
-      <TimelinePanel
-        date={moment(date)}
-        onChange={(date) => dispatch(setTimelineDate(date.format()))}
-        minDate={startDate}
-        maxDate={moment()}
-      />
-      <SearchBar
-        onChange={(searchValue: string) =>
-          dispatch(setSearchValue(searchValue))
+      <Toolbar />
+      <TotalTabs
+        onChange={(tab: Tab) =>
+          dispatch(
+            setFilterBy({
+              status: tab.key as Status,
+              favorite: filterBy.favorite,
+            })
+          )
         }
+        tabs={tabs.map((tab: Tab) => ({
+          ...tab,
+          value: sumData[tab.key as Status].toLocaleString(),
+        }))}
+        tab={tabs.find((tab) => tab.key === filterBy.status) as Tab}
+        tabTextColor="inherit"
+        tabIndicatorColor={COLORS_BY_FILTER_TYPE[filterBy.status]}
       />
       <CountriesTable />
-    </div>
+    </Drawer>
   );
-}
+};
 
-export { SideBar };
+export default SideBar;

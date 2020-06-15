@@ -1,14 +1,8 @@
+import { useTheme } from "@material-ui/core";
 import { Feature } from "geojson";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { Moment } from "moment";
-import React, {
-  memo,
-  useCallback,
-  useContext,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import MapGL, {
   FlyToInterpolator,
   InteractiveMap,
@@ -18,9 +12,7 @@ import MapGL, {
 } from "react-map-gl";
 import { useSelector } from "react-redux";
 import { SHORT_DATE_FORMAT } from "../../common/constants/global";
-import { Theme, ThemeContext } from "../../common/theme/ThemeContext";
-import { ThemeSwitch } from "../../components/themeSwitch/ThemeSwitch";
-import { Tooltip } from "../../components/tooltip/Tooltip";
+import Tooltip from "../../components/Tooltip/Tooltip";
 import { Nullable } from "../../genericTypes";
 import {
   selectCountriesByName,
@@ -32,7 +24,7 @@ import {
   selectMomentTimelineDate,
 } from "../sideBar/sideBarSlice";
 import { FilterBy } from "../sideBar/sideBarTypes";
-import styles from "./Map.module.scss";
+import useStyles from "./map.styles";
 import { selectViewPort } from "./mapSlice";
 import {
   COLORS_BY_FILTER_TYPE,
@@ -40,9 +32,12 @@ import {
   getTimelineExpression,
 } from "./mapUtils";
 
+const inOurPairs = getInOurPais();
+
 function Map() {
+  const classes = useStyles();
   const mapRef = useRef<InteractiveMap>(null);
-  const { theme } = useContext(ThemeContext);
+  const theme = useTheme();
   const initialViewport = useSelector(selectViewPort);
   const [viewport, setViewport] = useState<Partial<InteractiveMapProps>>(
     initialViewport
@@ -61,6 +56,7 @@ function Map() {
   const date: string = currentMoment.format(SHORT_DATE_FORMAT);
   const hasCasesExpression = getTimelineExpression("has", date);
   const getCasesExpression = getTimelineExpression("get", date);
+
   const onHover = useCallback(
     ({ features = [], srcEvent: { offsetX, offsetY } }) => {
       const feature: Feature = features.find((f: any) =>
@@ -94,13 +90,13 @@ function Map() {
   }, [initialViewport]);
 
   return (
-    <div className={styles.mapContainer}>
+    <div className={classes.root}>
       <MapGL
         ref={mapRef}
         {...viewport}
         width="100%"
         height="100%"
-        mapStyle={`mapbox://styles/mapbox/${theme}-v10`}
+        mapStyle={`mapbox://styles/mapbox/${theme.palette.type}-v10?optimize=true`}
         mapboxApiAccessToken="pk.eyJ1IjoiZGVtcGtoIiwiYSI6ImNrOGZwanFuazAxdnozbG4yNm1tOHVuYzkifQ.fRJrCsndLJ4yM-jlPaAG9Q"
         onViewportChange={(nextViewport) => setViewport(nextViewport)}
         onHover={onHover}
@@ -115,7 +111,7 @@ function Map() {
                 "interpolate",
                 ["linear"],
                 getCasesExpression,
-                ...getInOurPais(),
+                ...inOurPairs,
               ],
               "circle-color": COLORS_BY_FILTER_TYPE[filterBy.status],
               "circle-opacity": 0.4,
@@ -128,7 +124,8 @@ function Map() {
             type="symbol"
             filter={["all", hasCasesExpression, [">", getCasesExpression, 0]]}
             paint={{
-              "text-color": theme === Theme.Light ? "#3B3B3B" : "#EBEBEB",
+              "text-color":
+                theme.palette.type === "light" ? "#3B3B3B" : "#EBEBEB",
             }}
             layout={{
               "text-field": getCasesExpression,
@@ -139,9 +136,8 @@ function Map() {
         </Source>
         <Tooltip date={currentMoment} hoveredCountry={hoveredCountry} />
       </MapGL>
-      <ThemeSwitch />
     </div>
   );
 }
 
-export default memo(Map);
+export default Map;

@@ -7,7 +7,9 @@ import {
   mockCountriesFetches,
 } from "../features/countries/__mocks__/countries.mock";
 import App from "./App";
-import { store } from "./store";
+import getStore from "./store";
+
+const { store } = getStore();
 
 describe("App", () => {
   it("should fetch countries on load and store it", async () => {
