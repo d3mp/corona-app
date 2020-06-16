@@ -17,10 +17,10 @@ export default makeStyles((theme: Theme) => ({
   },
   drawerPaper: {
     width: drawerWidth,
-    height: `calc(100% - ${timelineHeight}px)`,
+    height: `calc(100% - ${timelineHeight}px) !important`,
     [theme.breakpoints.down("sm")]: {
       width: "100%",
-      height: `calc(100% - ${timelineHeight + 49}px)`,
+      height: `calc(100% - ${timelineHeight + 49}px) !important`,
     },
   },
 }));
