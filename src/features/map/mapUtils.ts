@@ -21,9 +21,9 @@ export function getInOurPais(max: number = 50000000) {
     if (step < 100000) {
       step += 5000;
     } else if (step < 500000) {
-      step += 20000;
+      step += 30000;
     } else {
-      step += 50000;
+      step += 100000;
     }
   }
 
