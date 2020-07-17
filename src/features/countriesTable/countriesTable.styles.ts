@@ -23,7 +23,7 @@ export default makeStyles((theme: Theme) => ({
     },
   },
   doubleLine: {
-    wordBreak: "break-all",
+    wordBreak: "break-word",
     whiteSpace: "normal",
     display: "-webkit-box",
     WebkitLineClamp: 2,
