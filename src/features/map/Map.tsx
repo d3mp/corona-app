@@ -97,7 +97,7 @@ function Map() {
         width="100%"
         height="100%"
         mapStyle={`mapbox://styles/mapbox/${theme.palette.type}-v10?optimize=true`}
-        mapboxApiAccessToken="pk.eyJ1IjoiZGVtcGtoIiwiYSI6ImNrOGZwanFuazAxdnozbG4yNm1tOHVuYzkifQ.fRJrCsndLJ4yM-jlPaAG9Q"
+        mapboxApiAccessToken={process.env.REACT_APP_MAP_BOX_API_TOKEN}
         onViewportChange={(nextViewport) => setViewport(nextViewport)}
         onHover={onHover}
       >
