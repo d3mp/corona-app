@@ -18,7 +18,7 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
   country: {
     fontSize: theme.typography.body2.fontSize,
-    fontWeight: theme.typography.fontWeightMedium,
+    fontWeight: theme.typography.fontWeightBold,
   },
 }));
 
