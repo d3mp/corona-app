@@ -1,9 +1,11 @@
 import { Paper } from "@material-ui/core";
 import React, { useCallback, useContext } from "react";
+import ReactGA from "react-ga";
 import { useDispatch, useSelector } from "react-redux";
 import {
   AutoSizer,
   Column,
+  SortDirection,
   SortDirectionType,
   Table,
   TableCellProps,
@@ -57,6 +59,13 @@ export function CountriesTable() {
   const onFavoriteHeaderClick = useCallback(
     (e) => {
       e.stopPropagation();
+
+      ReactGA.event({
+        action: "Filter By Favorite",
+        category: "Countries",
+        value: Number(!filterBy.favorite),
+      });
+
       dispatch(
         setFilterBy({
           ...filterBy,
@@ -91,6 +100,15 @@ export function CountriesTable() {
             isFavorite={favoriteCountries[props.rowData.country]}
             onClick={(e) => {
               e.stopPropagation();
+
+              ReactGA.event({
+                action: !favoriteCountries[props.rowData.country]
+                  ? "Add Favorite"
+                  : "Remove Favorite",
+                category: "Country",
+                label: props.rowData.country,
+              });
+
               dispatch(toggleFavorite(props.rowData.country));
             }}
           />
@@ -125,6 +143,12 @@ export function CountriesTable() {
               onRowClick={({ rowData }: { rowData: Country }) => {
                 tabsContext.setTab(1);
 
+                ReactGA.event({
+                  action: "Country Click",
+                  category: "Country",
+                  label: rowData.country,
+                });
+
                 setTimeout(() => {
                   dispatch(
                     setViewport({
@@ -135,9 +159,15 @@ export function CountriesTable() {
                   );
                 }, 200);
               }}
-              sort={({ sortBy, sortDirection }) =>
-                dispatch(sort({ sortBy, sortDirection }))
-              }
+              sort={({ sortBy, sortDirection }) => {
+                ReactGA.event({
+                  action: "Sort By",
+                  category: "Countries",
+                  label: sortBy,
+                  value: Number(sortDirection === SortDirection.DESC),
+                });
+                dispatch(sort({ sortBy, sortDirection }));
+              }}
               sortBy={sortBy}
               sortDirection={sortDirection}
             >

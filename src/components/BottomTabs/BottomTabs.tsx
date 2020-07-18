@@ -9,8 +9,10 @@ import {
   useTheme,
 } from "@material-ui/core";
 import moment, { Moment } from "moment";
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
+import ReactGA from "react-ga";
 import { useDispatch, useSelector } from "react-redux";
+import useDebounce from "../../common/hooks/useDebounce";
 import { TabsContext } from "../../contexts/TabsContext";
 import { selectFilteredStartTimelineDate } from "../../features/countries/countriesSlice";
 import {
@@ -33,14 +35,29 @@ const BottomTabs = ({ tabs }: Props) => {
   const dispatch = useDispatch();
   const theme: Theme = useTheme();
   const classes = useStyles();
-  const [value, setValue] = useState(0);
-  const handleChange = useCallback(
-    (e, newValue: number) => setValue(newValue),
-    []
-  );
   const largeScreen: boolean = useMediaQuery(theme.breakpoints.up("md"));
   const date: Moment = useSelector(selectMomentTimelineDate);
   const startDate: Moment = useSelector(selectFilteredStartTimelineDate);
+  const [value, setValue] = useState(0);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [debouncedTimelineDate, _, setDebouncedTimelineDate] = useDebounce<
+    Moment
+  >(startDate, 500);
+
+  const handleChange = useCallback(
+    (e, newValue: number) => setValue(newValue),
+    [setValue]
+  );
+
+  useEffect(() => {
+    if (debouncedTimelineDate) {
+      ReactGA.event({
+        action: "Filter By Date",
+        category: "Countries",
+        label: debouncedTimelineDate.format("LL"),
+      });
+    }
+  }, [debouncedTimelineDate]);
 
   return (
     <TabsContext.Provider value={{ tab: value, setTab: setValue }}>
@@ -57,7 +74,10 @@ const BottomTabs = ({ tabs }: Props) => {
       </div>
       <TimelinePanel
         date={date}
-        onChange={(date) => dispatch(setTimelineDate(date.format()))}
+        onChange={(date: Moment) => {
+          setDebouncedTimelineDate(date);
+          dispatch(setTimelineDate(date.format()));
+        }}
         minDate={startDate}
         maxDate={moment().set({
           hours: 0,

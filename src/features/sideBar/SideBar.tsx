@@ -1,5 +1,6 @@
 import { Drawer, Toolbar } from "@material-ui/core";
 import React from "react";
+import ReactGA from "react-ga";
 import { useDispatch, useSelector } from "react-redux";
 import TotalTabs, { Tab } from "../../components/TotalTabs/TotalTabs";
 import { selectFilteredSumData } from "../countries/countriesSlice";
@@ -34,14 +35,20 @@ const SideBar = () => {
     >
       <Toolbar />
       <TotalTabs
-        onChange={(tab: Tab) =>
+        onChange={(tab: Tab) => {
+          ReactGA.event({
+            action: "Filter By Status",
+            category: "Countries",
+            label: tab.key,
+          });
+
           dispatch(
             setFilterBy({
               status: tab.key as Status,
               favorite: filterBy.favorite,
             })
-          )
-        }
+          );
+        }}
         tabs={tabs.map((tab: Tab) => ({
           ...tab,
           value: sumData[tab.key as Status].toLocaleString(),
