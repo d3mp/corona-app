@@ -1,4 +1,8 @@
-import { Slider, Typography } from "@material-ui/core";
+import { Box, Hidden, IconButton, Slider, Typography } from "@material-ui/core";
+import {
+  ArrowBackIosOutlined,
+  ArrowForwardIosOutlined,
+} from "@material-ui/icons";
 import moment, { Moment } from "moment";
 import React, { memo, useCallback, useMemo } from "react";
 import useStyles from "./timleinePanel.styles";
@@ -25,6 +29,22 @@ function TimelinePanel({
     [date, onChange]
   );
 
+  const handlePrevButton = useCallback(() => {
+    const newDate = date.clone().subtract(1, "day");
+
+    if (newDate.isSameOrAfter(minDate)) {
+      return onChange(newDate);
+    }
+  }, [date, minDate, onChange]);
+
+  const handleNextButton = useCallback(() => {
+    const newDate = date.clone().add(1, "day");
+
+    if (newDate.isSameOrBefore(maxDate)) {
+      return onChange(newDate);
+    }
+  }, [date, maxDate, onChange]);
+
   const getMarks = (
     minDate: Moment | undefined,
     maxDate: Moment | undefined
@@ -40,7 +60,7 @@ function TimelinePanel({
       if (iDate.date() === 1) {
         marks.push({
           value: i,
-          label: iDate.format("MMMM"),
+          label: iDate.format("MMM"),
         });
       }
     }
@@ -59,18 +79,38 @@ function TimelinePanel({
       <Typography className={classes.label} data-testid="timeline-label">
         {date.format("LL")}
       </Typography>
-      <Slider
-        data-testid="timeline-slider"
-        aria-labelledby="discrete-slider"
-        step={1}
-        marks={marks}
-        min={minDate?.dayOfYear()}
-        max={maxDate?.dayOfYear()}
-        value={date.dayOfYear()}
-        valueLabelFormat={() => date.format("D")}
-        valueLabelDisplay="on"
-        onChange={updateValue}
-      />
+      <Box display="flex" flexDirection="row">
+        <Hidden mdUp>
+          <IconButton
+            className={classes.arrowButton}
+            aria-label="button day-before"
+            onClick={handlePrevButton}
+          >
+            <ArrowBackIosOutlined />
+          </IconButton>
+        </Hidden>
+        <Slider
+          data-testid="timeline-slider"
+          aria-labelledby="discrete-slider"
+          step={1}
+          marks={marks}
+          min={minDate?.dayOfYear()}
+          max={maxDate?.dayOfYear()}
+          value={date.dayOfYear()}
+          valueLabelFormat={() => date.format("D")}
+          valueLabelDisplay="on"
+          onChange={updateValue}
+        />
+        <Hidden mdUp>
+          <IconButton
+            className={classes.arrowButton}
+            aria-label="button day-after"
+            onClick={handleNextButton}
+          >
+            <ArrowForwardIosOutlined />
+          </IconButton>
+        </Hidden>
+      </Box>
     </div>
   );
 }

@@ -13,16 +13,22 @@ export default makeStyles((theme: Theme) => ({
     borderTopColor: theme.palette.divider,
     borderTopStyle: "solid",
     zIndex: theme.zIndex.drawer,
+    [theme.breakpoints.down("sm")]: {
+      paddingLeft: 0,
+      paddingRight: 0,
+    },
 
     "& .MuiSlider-root": {
-      paddingTop: theme.spacing(1),
+      paddingTop: theme.spacing(2),
       paddingBottom: theme.spacing(1),
+      marginRight: theme.spacing(1),
     },
 
     "@media (pointer: coarse)": {
       "& .MuiSlider-root": {
-        paddingTop: theme.spacing(1),
+        paddingTop: theme.spacing(2),
         paddingBottom: theme.spacing(1),
+        marginRight: theme.spacing(1),
       },
 
       "& .MuiSlider-markLabel": {
@@ -33,5 +39,13 @@ export default makeStyles((theme: Theme) => ({
   label: {
     color: theme.palette.text.primary,
     fontSize: theme.typography.fontSize,
+    userSelect: "none",
+    [theme.breakpoints.down("sm")]: {
+      padding: `0 ${theme.spacing(1)}px`,
+    },
+  },
+  arrowButton: {
+    width: 32,
+    height: 32,
   },
 }));
