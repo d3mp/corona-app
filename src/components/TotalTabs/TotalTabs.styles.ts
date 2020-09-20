@@ -20,10 +20,16 @@ export default makeStyles((theme: Theme) => ({
   tabLabel: {
     fontSize: theme.typography.fontSize,
     textTransform: "capitalize",
+    [theme.breakpoints.down(450)]: {
+      fontSize: theme.typography.fontSize - 2,
+    },
   },
   tabSubLabel: {
     fontWeight: theme.typography.fontWeightBold,
     fontSize: theme.typography.body1.fontSize,
     lineHeight: 1,
+    [theme.breakpoints.down(450)]: {
+      fontSize: theme.typography.fontSize - 2,
+    },
   },
 }));
