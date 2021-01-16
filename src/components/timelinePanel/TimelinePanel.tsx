@@ -5,6 +5,7 @@ import {
 } from "@material-ui/icons";
 import moment, { Moment } from "moment";
 import React, { memo, useCallback, useMemo } from "react";
+import { getMarks } from "./timelinePanelUtils";
 import useStyles from "./timleinePanel.styles";
 
 interface TimelinePanelProps {
@@ -21,12 +22,19 @@ function TimelinePanel({
   maxDate,
 }: TimelinePanelProps) {
   const classes = useStyles();
+
+  const marks = useMemo(
+    () => getMarks(minDate, maxDate),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [minDate?.format(), maxDate?.format()]
+  );
+
   const updateValue = useCallback(
     (e, value) => {
-      const newDate = date.clone().dayOfYear(value);
+      const newDate = moment(value);
       return onChange(newDate);
     },
-    [date, onChange]
+    [onChange]
   );
 
   const handlePrevButton = useCallback(() => {
@@ -44,35 +52,6 @@ function TimelinePanel({
       return onChange(newDate);
     }
   }, [date, maxDate, onChange]);
-
-  const getMarks = (
-    minDate: Moment | undefined,
-    maxDate: Moment | undefined
-  ) => {
-    if (!minDate || !maxDate) return [];
-
-    let dayOfYear: number = maxDate.dayOfYear();
-    let marks = [];
-
-    for (let i = dayOfYear; i > minDate.dayOfYear(); i--) {
-      const iDate = moment().dayOfYear(i);
-
-      if (iDate.date() === 1) {
-        marks.push({
-          value: i,
-          label: iDate.format("MMM"),
-        });
-      }
-    }
-
-    return marks;
-  };
-
-  const marks = useMemo(
-    () => getMarks(minDate, maxDate),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [minDate?.format(), maxDate?.format()]
-  );
 
   return (
     <div className={classes.root}>
@@ -94,9 +73,9 @@ function TimelinePanel({
           aria-labelledby="discrete-slider"
           step={1}
           marks={marks}
-          min={minDate?.dayOfYear()}
-          max={maxDate?.dayOfYear()}
-          value={date.dayOfYear()}
+          min={minDate?.valueOf()}
+          max={maxDate?.valueOf()}
+          value={date?.valueOf()}
           valueLabelFormat={() => date.format("D")}
           valueLabelDisplay="on"
           onChange={updateValue}
