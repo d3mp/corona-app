@@ -19,11 +19,13 @@ export function getInOurPais(max: number = 50000000) {
     steps.push(step);
 
     if (step < 100000) {
-      step += 5000;
-    } else if (step < 500000) {
-      step += 30000;
+      step += 10000;
+    } else if (step < 1000000) {
+      step += 50000;
+    } else if (step < 10000000) {
+      step += 500000;
     } else {
-      step += 100000;
+      step += 1000000;
     }
   }
 
