@@ -1,6 +1,6 @@
 import { makeStyles, Theme } from "@material-ui/core";
 
-export const timelineHeight: number = 80;
+export const timelineHeight: number = 100;
 
 export default makeStyles((theme: Theme) => ({
   root: {
@@ -16,24 +16,21 @@ export default makeStyles((theme: Theme) => ({
     [theme.breakpoints.down("sm")]: {
       paddingLeft: 0,
       paddingRight: 0,
-    },
+      "& .MuiSlider-markLabel": {
+        top: 26,
 
+        "&:nth-child(4n+1)": {
+          top: -13,
+        },
+      },
+    },
+    "& .MuiBox-root": {
+      paddingTop: theme.spacing(2),
+    },
     "& .MuiSlider-root": {
       paddingTop: theme.spacing(2),
       paddingBottom: theme.spacing(1),
       marginRight: theme.spacing(1),
-    },
-
-    "@media (pointer: coarse)": {
-      "& .MuiSlider-root": {
-        paddingTop: theme.spacing(2),
-        paddingBottom: theme.spacing(1),
-        marginRight: theme.spacing(1),
-      },
-
-      "& .MuiSlider-markLabel": {
-        top: 26,
-      },
     },
   },
   label: {

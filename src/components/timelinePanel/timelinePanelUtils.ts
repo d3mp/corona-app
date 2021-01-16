@@ -18,7 +18,7 @@ export const getMarks = (
     if (iDate.date() === 1) {
       marks.push({
         value: i,
-        label: iDate.format("MMM YY"),
+        label: iDate.format("MMM"),
       });
     }
   }
